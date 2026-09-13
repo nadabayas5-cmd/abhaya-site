@@ -10,6 +10,7 @@ import MobileBottomNav from './components/MobileBottomNav';
 import AdminFloatingDock from './components/AdminFloatingDock';
 import FloatingRegionSelector from './components/FloatingRegionSelector';
 import CMSEditDrawer from './components/cms/CMSEditDrawer';
+import SocialProofToast from './components/SocialProofToast';
 import { shouldRedirectLegacyAdmin } from './lib/routing';
 
 import HomePage from './pages/HomePage';
@@ -44,6 +45,7 @@ function AppLayout() {
       <Footer />
       <MobileBottomNav />
       <FloatingRegionSelector />
+      <SocialProofToast />
       <CartDrawer />
       <QuickViewModal />
       <SearchModal />
