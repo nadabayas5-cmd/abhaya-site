@@ -247,7 +247,7 @@ export default function ProductDetailPage() {
   }, []);
 
   const productColor = product.color?.trim() || product.colors?.[0]?.name || '';
-  const currentColor = product.colors?.[0] || (productColor ? { name: productColor, hex: '#1C1C1C' } : null);
+  const currentColor = product.colors?.[0] || (productColor ? { name: productColor, hex: '#1C1C1C' } : { name: 'Standard', hex: '#1C1C1C' });
   const images = product.gallery && product.gallery.length > 0 ? product.gallery : [product.image];
   const relatedProducts = PRODUCTS.filter((p) => p.id !== product.id).slice(0, 4);
   const regionDeliveryFee = deliverySettings?.[activeRegion]?.deliveryFee ?? 0;
@@ -281,8 +281,8 @@ export default function ProductDetailPage() {
 
     addToCart(
       product,
-      product.color || currentColor.name,
-      currentColor.hex,
+      product.color?.trim() || currentColor?.name || 'Standard',
+      currentColor?.hex || '#1C1C1C',
       chosenSizeFormatted,
       quantity,
       images[activeImageIdx],
@@ -302,7 +302,7 @@ export default function ProductDetailPage() {
       : selectedSize;
     const msg = formatSingleProductWhatsAppMessage({
       product,
-      colorName: product.color || currentColor.name,
+      colorName: product.color?.trim() || currentColor?.name || 'Standard',
       size: chosenSizeFormatted,
       style: selectedStyle,
       work: selectedWork,

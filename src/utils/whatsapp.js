@@ -94,11 +94,11 @@ export function formatSingleProductWhatsAppMessage({
     '✨ *NOOR AL DHUHA ATELIER — BESPOKE ABAYA ORDER* ✨\n',
     'Salam / Hello! I would like to order this custom piece from NOOR AL DHUHA Atelier:\n',
     '━━━━━━━━━━━━━━━━━━━━',
-    `*Piece:* ${product.name}`,
+    `*Piece:* ${product.name || 'Bespoke Abaya'}`,
     `*Style / Silhouette:* ${selectedStyle}`,
     `*Work / Craftsmanship:* ${selectedWork}`,
-    `*Color:* ${colorName || (product.colors && product.colors[0]?.name)}`,
-    `*Abaya Size:* ${size || (product.sizes && product.sizes[0])}`
+    `*Color:* ${colorName || product.color || product.colors?.[0]?.name || 'Standard'}`,
+    `*Abaya Size:* ${size || (product.sizes && product.sizes[0]) || 'Standard'}`
   ];
 
   if (customMeasurements) {
