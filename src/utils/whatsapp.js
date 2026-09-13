@@ -30,9 +30,12 @@ export function formatCartWhatsAppMessage({
       `\n*${index + 1}. ${item.name}*`,
       `   • Style / Cut: ${item.style || 'Open abaya'}`,
       `   • Work / Craft: ${item.work || 'plain'}`,
-      `   • Color: ${item.color}`,
-      `   • Abaya Size: ${item.size}`
+      `   • Color: ${item.color || 'Standard'}`,
+      `   • Abaya Size: ${item.size || 'Standard'}`
     ];
+    if (item.image) {
+      itemSpecLines.push(`   • Photo: ${item.image}`);
+    }
     if (item.customMeasurements) {
       if (item.customMeasurements.customDetails) {
         itemSpecLines.push(`     - Custom Notes: ${item.customMeasurements.customDetails}`);
@@ -83,7 +86,9 @@ export function formatSingleProductWhatsAppMessage({
   quantity = 1,
   customMeasurements = null,
   formatPrice,
-  unitPrice
+  unitPrice,
+  imageUrl,
+  productUrl
 }) {
   const priceEach = unitPrice ?? product.price;
   const totalPrice = formatPrice(priceEach * quantity);
@@ -106,6 +111,15 @@ export function formatSingleProductWhatsAppMessage({
     if (customMeasurements.height) lines.push(`*Height / Stature:* ${customMeasurements.height}`);
     if (customMeasurements.bust) lines.push(`*Bust Measurement:* ${customMeasurements.bust}`);
     if (customMeasurements.length) lines.push(`*Desired Garment Length:* ${customMeasurements.length}`);
+  }
+
+  const activePhoto = imageUrl || product.image || (product.gallery && product.gallery[0]);
+  if (activePhoto) {
+    lines.push(`*Piece Photo:* ${activePhoto}`);
+  }
+
+  if (productUrl) {
+    lines.push(`*Product Page:* ${productUrl}`);
   }
 
   lines.push(

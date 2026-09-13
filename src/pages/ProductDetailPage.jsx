@@ -300,6 +300,8 @@ export default function ProductDetailPage() {
     const chosenSizeFormatted = isCustom && customNotes.trim()
       ? `Custom — ${customNotes.trim()}`
       : selectedSize;
+    const activeImage = images[activeImageIdx] || product.image;
+    const productUrl = typeof window !== 'undefined' ? window.location.href : '';
     const msg = formatSingleProductWhatsAppMessage({
       product,
       colorName: product.color?.trim() || currentColor?.name || 'Standard',
@@ -309,7 +311,9 @@ export default function ProductDetailPage() {
       quantity,
       customMeasurements: isCustom ? { customDetails: customNotes } : null,
       formatPrice,
-      unitPrice: getProductPrice(product)
+      unitPrice: getProductPrice(product),
+      imageUrl: activeImage,
+      productUrl: productUrl
     });
     showToast(`Opening WhatsApp order for "${product.name}"...`);
     openWhatsApp(msg);
