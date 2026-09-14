@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { X, User, Phone, MapPin, Building2, Globe, FileText, MessageSquare, Sparkles, CheckCircle2, ShieldCheck, ArrowRight } from 'lucide-react';
+import { X, MessageSquare, CheckCircle2, ArrowRight } from 'lucide-react';
 import { useShop } from '../context/ShopContext';
 import {
   WHATSAPP_PHONE,
@@ -159,16 +159,11 @@ export default function WhatsAppDetailsModal() {
             <X className="w-5 h-5" />
           </button>
 
-          <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 bg-white/15 text-rose-200 text-[10px] font-bold uppercase tracking-widest mb-2 border border-white/20">
-            <Sparkles className="w-3 h-3 text-rose-300" />
-            <span>Atelier WhatsApp Concierge</span>
-          </div>
-
           <h3 className="font-serif text-xl sm:text-2xl font-bold tracking-tight text-white">
-            Delivery & Customer Details
+            Enter Your Details
           </h3>
-          <p className="text-white/80 text-xs sm:text-sm font-medium mt-1 leading-snug">
-            Your details will be prefilled into the WhatsApp order for fast atelier confirmation & dispatch.
+          <p className="text-white/85 text-xs sm:text-sm font-medium mt-1">
+            Please provide your details below to prefill your order on WhatsApp.
           </p>
         </div>
 
@@ -177,9 +172,8 @@ export default function WhatsAppDetailsModal() {
           
           {/* Full Name */}
           <div>
-            <label className="block text-[11px] font-bold uppercase tracking-wider text-stone-700 mb-1 flex items-center gap-1.5">
-              <User className="w-3.5 h-3.5 text-[#7A0648]" />
-              <span>Full Name <span className="text-rose-600">*</span></span>
+            <label className="block text-[11px] font-bold uppercase tracking-wider text-stone-700 mb-1">
+              Full Name <span className="text-rose-600">*</span>
             </label>
             <input
               type="text"
@@ -193,9 +187,8 @@ export default function WhatsAppDetailsModal() {
 
           {/* Phone Number */}
           <div>
-            <label className="block text-[11px] font-bold uppercase tracking-wider text-stone-700 mb-1 flex items-center gap-1.5">
-              <Phone className="w-3.5 h-3.5 text-[#7A0648]" />
-              <span>Phone / WhatsApp Number <span className="text-rose-600">*</span></span>
+            <label className="block text-[11px] font-bold uppercase tracking-wider text-stone-700 mb-1">
+              Phone Number <span className="text-rose-600">*</span>
             </label>
             <input
               type="tel"
@@ -209,9 +202,8 @@ export default function WhatsAppDetailsModal() {
 
           {/* Delivery Address */}
           <div>
-            <label className="block text-[11px] font-bold uppercase tracking-wider text-stone-700 mb-1 flex items-center gap-1.5">
-              <MapPin className="w-3.5 h-3.5 text-[#7A0648]" />
-              <span>Street Address / Villa / Apartment <span className="text-rose-600">*</span></span>
+            <label className="block text-[11px] font-bold uppercase tracking-wider text-stone-700 mb-1">
+              Delivery Address <span className="text-rose-600">*</span>
             </label>
             <input
               type="text"
@@ -226,9 +218,8 @@ export default function WhatsAppDetailsModal() {
           {/* City & Country Row */}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <div>
-              <label className="block text-[11px] font-bold uppercase tracking-wider text-stone-700 mb-1 flex items-center gap-1.5">
-                <Building2 className="w-3.5 h-3.5 text-[#7A0648]" />
-                <span>City / Emirate</span>
+              <label className="block text-[11px] font-bold uppercase tracking-wider text-stone-700 mb-1">
+                City / Emirate
               </label>
               <input
                 type="text"
@@ -240,9 +231,8 @@ export default function WhatsAppDetailsModal() {
             </div>
 
             <div>
-              <label className="block text-[11px] font-bold uppercase tracking-wider text-stone-700 mb-1 flex items-center gap-1.5">
-                <Globe className="w-3.5 h-3.5 text-[#7A0648]" />
-                <span>Country / Region</span>
+              <label className="block text-[11px] font-bold uppercase tracking-wider text-stone-700 mb-1">
+                Country / Region
               </label>
               <input
                 type="text"
@@ -257,7 +247,7 @@ export default function WhatsAppDetailsModal() {
           {/* Postal / PIN Code & Landmark (Optional) */}
           <div>
             <label className="block text-[11px] font-bold uppercase tracking-wider text-stone-700 mb-1">
-              Postal / PIN Code or Landmark <span className="text-stone-400 font-normal">(Optional)</span>
+              Postal / PIN Code <span className="text-stone-400 font-normal">(Optional)</span>
             </label>
             <input
               type="text"
@@ -270,23 +260,22 @@ export default function WhatsAppDetailsModal() {
 
           {/* Special Notes / Instructions */}
           <div>
-            <label className="block text-[11px] font-bold uppercase tracking-wider text-stone-700 mb-1 flex items-center gap-1.5">
-              <FileText className="w-3.5 h-3.5 text-[#7A0648]" />
-              <span>Special Delivery or Atelier Notes <span className="text-stone-400 font-normal">(Optional)</span></span>
+            <label className="block text-[11px] font-bold uppercase tracking-wider text-stone-700 mb-1">
+              Special Notes <span className="text-stone-400 font-normal">(Optional)</span>
             </label>
             <textarea
               value={formData.notes}
               onChange={e => handleChange('notes', e.target.value)}
-              placeholder="e.g. Gift box packaging required, call upon arrival..."
+              placeholder="e.g. Call upon arrival, specific delivery timing..."
               rows={2}
               className="w-full px-3 py-2 bg-white border border-stone-300 text-[#1E141B] placeholder-stone-400 focus:outline-none focus:border-[#7A0648] focus:ring-1 focus:ring-[#7A0648] text-xs sm:text-sm resize-none"
             />
           </div>
 
-          {/* Preferred WhatsApp Concierge Line Selection */}
+          {/* WhatsApp Number Selection */}
           <div className="pt-2 border-t border-stone-200">
             <span className="block text-[10px] font-bold uppercase tracking-widest text-stone-600 mb-2">
-              Send To WhatsApp Concierge Line:
+              Send Order To:
             </span>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
               <button
@@ -295,7 +284,7 @@ export default function WhatsAppDetailsModal() {
                 className={`p-2.5 text-left border transition-all flex items-center justify-between cursor-pointer ${formData.selectedLine === 'primary' ? 'border-[#7A0648] bg-[#F5EAF1] ring-1 ring-[#7A0648]' : 'border-stone-200 bg-white hover:bg-stone-50'}`}
               >
                 <div>
-                  <span className="block text-[11px] font-bold text-[#1E141B]">Primary Line</span>
+                  <span className="block text-[11px] font-bold text-[#1E141B]">Primary</span>
                   <span className="block text-[10px] text-stone-600">{WHATSAPP_PHONE_DISPLAY}</span>
                 </div>
                 {formData.selectedLine === 'primary' && <CheckCircle2 className="w-4 h-4 text-[#7A0648]" />}
@@ -307,7 +296,7 @@ export default function WhatsAppDetailsModal() {
                 className={`p-2.5 text-left border transition-all flex items-center justify-between cursor-pointer ${formData.selectedLine === 'fallback' ? 'border-[#7A0648] bg-[#F5EAF1] ring-1 ring-[#7A0648]' : 'border-stone-200 bg-white hover:bg-stone-50'}`}
               >
                 <div>
-                  <span className="block text-[11px] font-bold text-[#1E141B]">Fallback Line 2</span>
+                  <span className="block text-[11px] font-bold text-[#1E141B]">Fallback Line</span>
                   <span className="block text-[10px] text-stone-600">{WHATSAPP_FALLBACK_PHONE_DISPLAY}</span>
                 </div>
                 {formData.selectedLine === 'fallback' && <CheckCircle2 className="w-4 h-4 text-[#7A0648]" />}
@@ -322,14 +311,9 @@ export default function WhatsAppDetailsModal() {
               className="w-full py-3.5 px-4 bg-[#25D366] hover:bg-[#1EBE5D] text-white font-sans font-bold text-xs sm:text-sm uppercase tracking-wider flex items-center justify-center gap-2 transition-all shadow-md active:scale-[0.99] cursor-pointer"
             >
               <MessageSquare className="w-4 h-4 shrink-0 fill-current" />
-              <span>Continue to WhatsApp with Prefilled Order</span>
+              <span>Continue to WhatsApp</span>
               <ArrowRight className="w-4 h-4 shrink-0" />
             </button>
-
-            <p className="text-center text-[10px] text-stone-500 font-medium flex items-center justify-center gap-1">
-              <ShieldCheck className="w-3.5 h-3.5 text-emerald-600" />
-              <span>Your details are stored securely on your device for fast future checkouts.</span>
-            </p>
           </div>
 
         </form>

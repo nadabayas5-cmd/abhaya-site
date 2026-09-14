@@ -316,7 +316,7 @@ export default function CartDrawer() {
                         </>
                       )}
                     </button>
-                    <span className="text-[10px] text-stone-500 uppercase tracking-wider">Concierge: {WHATSAPP_PHONE_DISPLAY}</span>
+                    <span className="text-[10px] text-stone-500 uppercase tracking-wider">WhatsApp: {WHATSAPP_PHONE_DISPLAY}</span>
                   </div>
                 </div>
 
