@@ -34,7 +34,7 @@ export default function ContactEditor({ value, onChange }) {
       </Field>
 
       <Field label="Email Address">
-        <Input type="email" value={value.email} onChange={v => set('email', v)} placeholder="atelier@nooraldhuha.com" />
+        <Input type="email" value={value.email} onChange={v => set('email', v)} placeholder="nooraldhuhallc@gmail.com" />
       </Field>
 
       <Field label="Physical Address">

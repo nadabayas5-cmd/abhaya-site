@@ -11,7 +11,7 @@ export default function ContactPage() {
   const phoneFallback = c.phone_fallback || '+971 55 737 0080';
   const whatsappUrl = c.whatsapp_url || 'https://wa.me/971561599436';
   const whatsappFallbackUrl = c.whatsapp_fallback_url || 'https://wa.me/971557370080';
-  const email = c.email || 'atelier@nooraldhuha.com';
+  const email = c.email || 'nooraldhuhallc@gmail.com';
   const address = c.address || 'Noor Al Dhuha Clothes Trading LLC, Dubai, United Arab Emirates';
   const mapsUrl = c.maps_url || 'https://share.google/vAGosfCcVD1W0HmtO';
   const hours = c.hours || 'Mon – Sat, 9:00 AM – 8:00 PM GST';

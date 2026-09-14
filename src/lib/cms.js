@@ -185,7 +185,7 @@ export const DEFAULT_CONTENT = {
     phone_fallback: '+971 55 737 0080',
     whatsapp_url: 'https://wa.me/971561599436',
     whatsapp_fallback_url: 'https://wa.me/971557370080',
-    email: 'atelier@nooraldhuha.com',
+    email: 'nooraldhuhallc@gmail.com',
     address: 'Noor Al Dhuha Clothes Trading LLC, Dubai, United Arab Emirates',
     maps_url: 'https://share.google/vAGosfCcVD1W0HmtO',
     hours: 'Mon – Sat, 9:00 AM – 8:00 PM GST',

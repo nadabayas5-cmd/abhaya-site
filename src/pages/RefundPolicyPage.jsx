@@ -66,8 +66,8 @@ export default function RefundPolicyPage() {
           </h2>
           <p>
             For any queries regarding returns, exchange size adjustments, or bespoke alterations, contact our concierge directly at{' '}
-            <a href="mailto:atelier@nooraldhuha.com" className="text-[#7A0648] hover:underline font-bold">
-              atelier@nooraldhuha.com
+            <a href="mailto:nooraldhuhallc@gmail.com" className="text-[#7A0648] hover:underline font-bold">
+              nooraldhuhallc@gmail.com
             </a>.
           </p>
         </section>
