@@ -7,8 +7,8 @@ export default function ContactPage() {
   const { showToast, siteContent } = useShop();
   const c = siteContent?.contact_info || {};
 
-  const phone = c.phone || '+91 95442 36858';
-  const whatsappUrl = c.whatsapp_url || 'https://wa.me/919544236858';
+  const phone = c.phone || '+971 56 701 3083';
+  const whatsappUrl = c.whatsapp_url || 'https://wa.me/971567013083';
   const email = c.email || 'atelier@nooraldhuha.com';
   const address = c.address || 'NOOR AL DHUHA Atelier, Dubai, UAE';
   const hours = c.hours || 'Mon – Sat, 9:00 AM – 8:00 PM GST';

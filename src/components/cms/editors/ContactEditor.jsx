@@ -18,11 +18,11 @@ export default function ContactEditor({ value, onChange }) {
       <SectionTitle>Contact Information</SectionTitle>
 
       <Field label="Phone Number">
-        <Input value={value.phone} onChange={v => set('phone', v)} placeholder="+91 95442 36858" />
+        <Input value={value.phone} onChange={v => set('phone', v)} placeholder="+971 56 701 3083" />
       </Field>
 
-      <Field label="WhatsApp URL" hint="Full wa.me link, e.g. https://wa.me/919544236858">
-        <Input value={value.whatsapp_url} onChange={v => set('whatsapp_url', v)} placeholder="https://wa.me/919..." />
+      <Field label="WhatsApp URL" hint="Full wa.me link, e.g. https://wa.me/971567013083">
+        <Input value={value.whatsapp_url} onChange={v => set('whatsapp_url', v)} placeholder="https://wa.me/971..." />
       </Field>
 
       <Field label="Email Address">

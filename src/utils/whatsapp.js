@@ -1,5 +1,5 @@
-export const WHATSAPP_PHONE = '919544236858';
-export const WHATSAPP_PHONE_DISPLAY = '+91 95442 36858';
+export const WHATSAPP_PHONE = '971567013083';
+export const WHATSAPP_PHONE_DISPLAY = '+971 56 701 3083';
 
 /**
  * Generate a luxury-formatted WhatsApp prefilled message for cart items

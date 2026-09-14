@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Package, Search, Truck, CheckCircle2, Clock, MapPin, ShieldCheck, ArrowRight, MessageSquare, AlertCircle } from 'lucide-react';
 import { useShop } from '../context/ShopContext';
+import { WHATSAPP_PHONE } from '../utils/whatsapp';
 
 export default function OrderLookupPage() {
   const { navigateTo, formatPrice, showToast } = useShop();
@@ -195,7 +196,7 @@ export default function OrderLookupPage() {
 
               <div className="flex items-center gap-3">
                 <a
-                  href="https://wa.me/919544236858"
+                  href={`https://wa.me/${WHATSAPP_PHONE}`}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="flex items-center gap-1.5 px-4 py-2 bg-emerald-700 hover:bg-emerald-800 text-white rounded-lg text-xs font-sans font-bold uppercase tracking-wider transition-all shadow-sm"

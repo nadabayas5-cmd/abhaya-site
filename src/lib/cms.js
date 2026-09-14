@@ -181,8 +181,8 @@ export const DEFAULT_CONTENT = {
   },
 
   contact_info: {
-    phone: '+91 95442 36858',
-    whatsapp_url: 'https://wa.me/919544236858',
+    phone: '+971 56 701 3083',
+    whatsapp_url: 'https://wa.me/971567013083',
     email: 'atelier@nooraldhuha.com',
     address: 'NOOR AL DHUHA Atelier, Luxury Apparel District, India',
     hours: 'Mon – Sat, 9:00 AM – 8:00 PM GST',
