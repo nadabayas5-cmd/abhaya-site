@@ -17,12 +17,20 @@ export default function ContactEditor({ value, onChange }) {
     <div className="space-y-5">
       <SectionTitle>Contact Information</SectionTitle>
 
-      <Field label="Phone Number">
-        <Input value={value.phone} onChange={v => set('phone', v)} placeholder="+971 56 701 3083" />
+      <Field label="Phone Number (Primary)">
+        <Input value={value.phone} onChange={v => set('phone', v)} placeholder="+971 56 159 9436" />
       </Field>
 
-      <Field label="WhatsApp URL" hint="Full wa.me link, e.g. https://wa.me/971567013083">
+      <Field label="Phone Number (Fallback / Line 2)">
+        <Input value={value.phone_fallback} onChange={v => set('phone_fallback', v)} placeholder="+971 55 737 0080" />
+      </Field>
+
+      <Field label="WhatsApp URL (Primary)" hint="Full wa.me link, e.g. https://wa.me/971561599436">
         <Input value={value.whatsapp_url} onChange={v => set('whatsapp_url', v)} placeholder="https://wa.me/971..." />
+      </Field>
+
+      <Field label="WhatsApp URL (Fallback)" hint="Full wa.me link, e.g. https://wa.me/971557370080">
+        <Input value={value.whatsapp_fallback_url} onChange={v => set('whatsapp_fallback_url', v)} placeholder="https://wa.me/971..." />
       </Field>
 
       <Field label="Email Address">
@@ -30,7 +38,11 @@ export default function ContactEditor({ value, onChange }) {
       </Field>
 
       <Field label="Physical Address">
-        <Textarea value={value.address} onChange={v => set('address', v)} rows={2} placeholder="NOOR AL DHUHA Atelier..." />
+        <Textarea value={value.address} onChange={v => set('address', v)} rows={2} placeholder="Noor Al Dhuha Clothes Trading LLC, Dubai, United Arab Emirates" />
+      </Field>
+
+      <Field label="Google Maps / Location URL" hint="Google Maps place or share link, e.g. https://share.google/vAGosfCcVD1W0HmtO">
+        <Input value={value.maps_url} onChange={v => set('maps_url', v)} placeholder="https://share.google/vAGosfCcVD1W0HmtO" />
       </Field>
 
       <Field label="Business Hours">

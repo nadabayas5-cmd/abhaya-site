@@ -11,6 +11,7 @@ import AdminFloatingDock from './components/AdminFloatingDock';
 import FloatingRegionSelector from './components/FloatingRegionSelector';
 import CMSEditDrawer from './components/cms/CMSEditDrawer';
 import SocialProofToast from './components/SocialProofToast';
+import WhatsAppDetailsModal from './components/WhatsAppDetailsModal';
 import { shouldRedirectLegacyAdmin } from './lib/routing';
 
 import HomePage from './pages/HomePage';
@@ -49,6 +50,7 @@ function AppLayout() {
       <CartDrawer />
       <QuickViewModal />
       <SearchModal />
+      <WhatsAppDetailsModal />
       <AdminFloatingDock />
       <CMSEditDrawer />
     </div>

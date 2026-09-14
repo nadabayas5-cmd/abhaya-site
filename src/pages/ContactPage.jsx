@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Mail, Phone, MapPin, MessageSquare, Send, CheckCircle2, ChevronDown, ChevronUp, Clock, Sparkles } from 'lucide-react';
+import { Mail, Phone, MapPin, MessageSquare, Send, CheckCircle2, ChevronDown, ChevronUp, Clock, Sparkles, ExternalLink } from 'lucide-react';
 import { useShop } from '../context/ShopContext';
 import EditableSection from '../components/cms/EditableSection';
 
@@ -7,10 +7,13 @@ export default function ContactPage() {
   const { showToast, siteContent } = useShop();
   const c = siteContent?.contact_info || {};
 
-  const phone = c.phone || '+971 56 701 3083';
-  const whatsappUrl = c.whatsapp_url || 'https://wa.me/971567013083';
+  const phone = c.phone || '+971 56 159 9436';
+  const phoneFallback = c.phone_fallback || '+971 55 737 0080';
+  const whatsappUrl = c.whatsapp_url || 'https://wa.me/971561599436';
+  const whatsappFallbackUrl = c.whatsapp_fallback_url || 'https://wa.me/971557370080';
   const email = c.email || 'atelier@nooraldhuha.com';
-  const address = c.address || 'NOOR AL DHUHA Atelier, Dubai, UAE';
+  const address = c.address || 'Noor Al Dhuha Clothes Trading LLC, Dubai, United Arab Emirates';
+  const mapsUrl = c.maps_url || 'https://share.google/vAGosfCcVD1W0HmtO';
   const hours = c.hours || 'Mon – Sat, 9:00 AM – 8:00 PM GST';
   const faqs = Array.isArray(c.faqs) && c.faqs.length > 0 ? c.faqs : [
     { q: 'What is Grade 6A Mulberry Silk and why is it superior?', a: 'Grade 6A represents the pinnacle of raw silk quality...' },
@@ -86,10 +89,17 @@ export default function ContactPage() {
                 </div>
                 <div>
                   <span className="font-bold block text-[#1E141B]">Concierge Hotline & WhatsApp</span>
-                  <a href={whatsappUrl} target="_blank" rel="noopener noreferrer" className="text-[#7A0648] hover:underline block mt-0.5 font-bold">
-                    {phone}
-                  </a>
-                  <span className="text-[11px] text-stone-500 font-medium">{hours}</span>
+                  <div className="space-y-0.5 mt-0.5">
+                    <a href={whatsappUrl} target="_blank" rel="noopener noreferrer" className="text-[#7A0648] hover:underline block font-bold">
+                      {phone} <span className="text-[10px] text-stone-500 font-normal">(Primary)</span>
+                    </a>
+                    {phoneFallback && (
+                      <a href={whatsappFallbackUrl} target="_blank" rel="noopener noreferrer" className="text-[#7A0648] hover:underline block font-bold">
+                        {phoneFallback} <span className="text-[10px] text-stone-500 font-normal">(Fallback / Line 2)</span>
+                      </a>
+                    )}
+                  </div>
+                  <span className="text-[11px] text-stone-500 font-medium block mt-1">{hours}</span>
                 </div>
               </div>
 
@@ -111,31 +121,52 @@ export default function ContactPage() {
                   <MapPin className="w-4 h-4" />
                 </div>
                 <div>
-                  <span className="font-bold block text-[#1E141B]">Flagship Atelier & Design Studio</span>
-                  <p className="text-stone-600 mt-0.5 leading-relaxed font-medium">
+                  <span className="font-bold block text-[#1E141B]">Flagship Atelier & Location</span>
+                  <p className="text-stone-700 mt-0.5 leading-relaxed font-semibold">
                     {address}
                   </p>
+                  {mapsUrl && (
+                    <a
+                      href={mapsUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="inline-flex items-center gap-1.5 text-xs font-sans font-bold text-[#7A0648] hover:underline mt-2 pt-1 border-t border-stone-100"
+                    >
+                      <MapPin className="w-3.5 h-3.5" />
+                      <span>Open in Google Maps</span>
+                      <ExternalLink className="w-3 h-3" />
+                    </a>
+                  )}
                 </div>
               </div>
 
             </div>
 
             {/* Quick Action Channels */}
-            <div className="pt-4 border-t border-stone-200 flex flex-col sm:flex-row gap-3">
+            <div className="pt-4 border-t border-stone-200 grid grid-cols-1 sm:grid-cols-3 gap-2.5">
               <a
                 href={whatsappUrl}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="flex-1 py-3 px-4 bg-[#25D366] hover:bg-[#1EBE5D] text-white text-xs font-sans font-bold uppercase tracking-wider flex items-center justify-center gap-2 transition-all shadow-xs"
+                className="py-2.5 px-3 bg-[#25D366] hover:bg-[#1EBE5D] text-white text-[11px] font-sans font-bold uppercase tracking-wider flex items-center justify-center gap-1.5 transition-all shadow-xs"
               >
-                <MessageSquare className="w-4 h-4" />
-                <span>Chat on WhatsApp</span>
+                <MessageSquare className="w-3.5 h-3.5 shrink-0" />
+                <span>WhatsApp</span>
+              </a>
+              <a
+                href={mapsUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="py-2.5 px-3 bg-[#7A0648] hover:bg-[#68043D] text-white text-[11px] font-sans font-bold uppercase tracking-wider flex items-center justify-center gap-1.5 transition-all shadow-xs"
+              >
+                <MapPin className="w-3.5 h-3.5 shrink-0" />
+                <span>Location</span>
               </a>
               <a
                 href="https://www.instagram.com/nailberrie._/"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="py-3 px-4 border border-stone-300 bg-stone-50 hover:bg-stone-100 text-[#1E141B] text-xs font-sans font-bold uppercase tracking-wider flex items-center justify-center gap-2 transition-all"
+                className="py-2.5 px-3 border border-stone-300 bg-stone-50 hover:bg-stone-100 text-[#1E141B] text-[11px] font-sans font-bold uppercase tracking-wider flex items-center justify-center gap-1.5 transition-all"
               >
                 <span>Instagram</span>
               </a>

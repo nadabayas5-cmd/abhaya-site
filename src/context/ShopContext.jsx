@@ -219,6 +219,18 @@ export function ShopProvider({ children }) {
   const [isCartOpen, setIsCartOpen] = useState(false);
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [quickViewProduct, setQuickViewProduct] = useState(null);
+  const [isWhatsAppModalOpen, setIsWhatsAppModalOpen] = useState(false);
+  const [whatsAppModalPayload, setWhatsAppModalPayload] = useState(null);
+
+  const openWhatsAppModal = useCallback((payload) => {
+    setWhatsAppModalPayload(payload);
+    setIsWhatsAppModalOpen(true);
+  }, []);
+
+  const closeWhatsAppModal = useCallback(() => {
+    setIsWhatsAppModalOpen(false);
+    setWhatsAppModalPayload(null);
+  }, []);
 
   // User Location (IP Geolocation via GeoJS)
   const [userLocation, setUserLocation] = useState({
@@ -786,6 +798,11 @@ export function ShopProvider({ children }) {
         setIsSearchOpen,
         quickViewProduct,
         setQuickViewProduct,
+        isWhatsAppModalOpen,
+        setIsWhatsAppModalOpen,
+        whatsAppModalPayload,
+        openWhatsAppModal,
+        closeWhatsAppModal,
 
         // User Location (IP Geolocation)
         userLocation,

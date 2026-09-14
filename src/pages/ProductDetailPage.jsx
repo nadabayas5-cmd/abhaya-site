@@ -146,7 +146,8 @@ export default function ProductDetailPage() {
     currency,
     freeShippingThreshold,
     deliverySettings,
-    activeRegion
+    activeRegion,
+    openWhatsAppModal
   } = useShop();
 
   const productId = routeProductId || selectedProductId;
@@ -302,21 +303,23 @@ export default function ProductDetailPage() {
       : selectedSize;
     const activeImage = images[activeImageIdx] || product.image;
     const productUrl = typeof window !== 'undefined' ? window.location.href : '';
-    const msg = formatSingleProductWhatsAppMessage({
-      product,
-      colorName: product.color?.trim() || currentColor?.name || 'Standard',
-      size: chosenSizeFormatted,
-      style: selectedStyle,
-      work: selectedWork,
-      quantity,
-      customMeasurements: isCustom ? { customDetails: customNotes } : null,
-      formatPrice,
-      unitPrice: getProductPrice(product),
-      imageUrl: activeImage,
-      productUrl: productUrl
+
+    openWhatsAppModal({
+      type: 'single',
+      data: {
+        product,
+        colorName: product.color?.trim() || currentColor?.name || 'Standard',
+        size: chosenSizeFormatted,
+        style: selectedStyle,
+        work: selectedWork,
+        quantity,
+        customMeasurements: isCustom ? { customDetails: customNotes } : null,
+        formatPrice,
+        unitPrice: getProductPrice(product),
+        imageUrl: activeImage,
+        productUrl: productUrl
+      }
     });
-    showToast(`Opening WhatsApp order for "${product.name}"...`);
-    openWhatsApp(msg);
   };
 
   const handleShare = () => {

@@ -1,5 +1,5 @@
 import React from 'react';
-import { ShieldCheck } from 'lucide-react';
+import { ShieldCheck, MapPin } from 'lucide-react';
 import { useShop } from '../context/ShopContext';
 import EditableSection from './cms/EditableSection';
 import brandLogo from '../assets/logo.png';
@@ -7,8 +7,10 @@ import brandLogo from '../assets/logo.png';
 export default function Footer() {
   const { navigateTo, siteContent } = useShop();
   const f = siteContent?.footer_content || {};
+  const c = siteContent?.contact_info || {};
   const brandName = f.brand_name || 'NOOR AL DHUHA';
   const copyright = f.copyright || '© 2024 NOOR AL DHUHA. ALL RIGHTS RESERVED.';
+  const mapsUrl = c.maps_url || 'https://share.google/vAGosfCcVD1W0HmtO';
 
   return (
     <EditableSection cmsKey="footer_content" label="Footer">
@@ -35,7 +37,17 @@ export default function Footer() {
               >
                 {brandName}
               </button>
-              <p className="text-[10px] sm:text-[11px] uppercase tracking-[0.12em] text-white/80 font-medium">
+              <a
+                href={mapsUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-1.5 text-[11px] tracking-wide text-white/90 hover:text-white transition-colors font-medium group/map"
+                title="View on Google Maps"
+              >
+                <MapPin className="w-3 h-3 text-rose-300 shrink-0 group-hover/map:scale-110 transition-transform" />
+                <span>Dubai, United Arab Emirates</span>
+              </a>
+              <p className="text-[10px] sm:text-[11px] uppercase tracking-[0.12em] text-white/70 font-medium">
                 {copyright}
               </p>
             </div>

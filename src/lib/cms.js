@@ -181,10 +181,13 @@ export const DEFAULT_CONTENT = {
   },
 
   contact_info: {
-    phone: '+971 56 701 3083',
-    whatsapp_url: 'https://wa.me/971567013083',
+    phone: '+971 56 159 9436',
+    phone_fallback: '+971 55 737 0080',
+    whatsapp_url: 'https://wa.me/971561599436',
+    whatsapp_fallback_url: 'https://wa.me/971557370080',
     email: 'atelier@nooraldhuha.com',
-    address: 'NOOR AL DHUHA Atelier, Luxury Apparel District, India',
+    address: 'Noor Al Dhuha Clothes Trading LLC, Dubai, United Arab Emirates',
+    maps_url: 'https://share.google/vAGosfCcVD1W0HmtO',
     hours: 'Mon – Sat, 9:00 AM – 8:00 PM GST',
     faqs: [
       {

@@ -21,7 +21,8 @@ export default function CartDrawer() {
     freeShippingDifference,
     navigateTo,
     showToast,
-    userLocation
+    userLocation,
+    openWhatsAppModal
   } = useShop();
 
   const [copied, setCopied] = useState(false);
@@ -43,17 +44,17 @@ export default function CartDrawer() {
   const handleProceedToWhatsApp = () => {
     if (cart.length === 0) return;
 
-    const message = formatCartWhatsAppMessage({
-      cart,
-      rawCartSubtotal,
-      cartSubtotal,
-      shippingFee,
-      formatPrice,
-      userLocation
+    openWhatsAppModal({
+      type: 'cart',
+      data: {
+        cart,
+        rawCartSubtotal,
+        cartSubtotal,
+        shippingFee,
+        formatPrice,
+        userLocation
+      }
     });
-
-    showToast('Opening WhatsApp with your bespoke order details...');
-    openWhatsApp(message);
   };
 
   const handleCopyOrderText = () => {

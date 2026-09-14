@@ -1,5 +1,7 @@
-export const WHATSAPP_PHONE = '971567013083';
-export const WHATSAPP_PHONE_DISPLAY = '+971 56 701 3083';
+export const WHATSAPP_PHONE = '971561599436';
+export const WHATSAPP_PHONE_DISPLAY = '+971 56 159 9436';
+export const WHATSAPP_FALLBACK_PHONE = '971557370080';
+export const WHATSAPP_FALLBACK_PHONE_DISPLAY = '+971 55 737 0080';
 
 /**
  * Generate a luxury-formatted WhatsApp prefilled message for cart items
@@ -10,7 +12,8 @@ export function formatCartWhatsAppMessage({
   cartSubtotal,
   shippingFee = 0,
   formatPrice,
-  userLocation = null
+  userLocation = null,
+  customerDetails = null
 }) {
   const shippingCostText = shippingFee === 0 ? 'Free' : formatPrice(shippingFee);
   const totalPayable = formatPrice(cartSubtotal + shippingFee);
@@ -51,18 +54,40 @@ export function formatCartWhatsAppMessage({
     lines.push(...itemSpecLines);
   });
 
+  if (customerDetails && (customerDetails.name || customerDetails.phone || customerDetails.address)) {
+    lines.push(
+      '\n━━━━━━━━━━━━━━━━━━━━',
+      '👤 *CUSTOMER & DELIVERY DETAILS:*',
+      '━━━━━━━━━━━━━━━━━━━━'
+    );
+    if (customerDetails.name) lines.push(`• *Client Name:* ${customerDetails.name}`);
+    if (customerDetails.phone) lines.push(`• *Contact Phone:* ${customerDetails.phone}`);
+    if (customerDetails.address) lines.push(`• *Shipping Address:* ${customerDetails.address}`);
+    if (customerDetails.city || customerDetails.country) {
+      const locationLine = [customerDetails.city, customerDetails.country].filter(Boolean).join(', ');
+      lines.push(`• *City & Country:* ${locationLine}`);
+    }
+    if (customerDetails.postalCode) {
+      lines.push(`• *Postal / PIN Code:* ${customerDetails.postalCode}`);
+    }
+    if (customerDetails.notes) {
+      lines.push(`• *Delivery / Atelier Notes:* ${customerDetails.notes}`);
+    }
+  }
+
   lines.push(
     '\n━━━━━━━━━━━━━━━━━━━━',
     '💰 *PAYMENT & ORDER SUMMARY:*',
     '━━━━━━━━━━━━━━━━━━━━',
-    `• Subtotal: ${formatPrice(rawCartSubtotal)}`
+    `• Subtotal: ${formatPrice(rawCartSubtotal)}`,
+    `• Shipping: ${shippingCostText}`
   );
 
-  lines.push(`• Shipping: ${shippingCostText}`);
-  if (userLocation?.country) {
+  if (!customerDetails?.country && userLocation?.country) {
     const locText = [userLocation.city, userLocation.country].filter(Boolean).join(', ');
     lines.push(`• Destination Country: ${userLocation.flag || '📍'} ${locText}`);
   }
+
   lines.push(
     `• *Estimated Total: ${totalPayable}*`,
     '\n━━━━━━━━━━━━━━━━━━━━',
@@ -88,7 +113,8 @@ export function formatSingleProductWhatsAppMessage({
   formatPrice,
   unitPrice,
   imageUrl,
-  productUrl
+  productUrl,
+  customerDetails = null
 }) {
   const priceEach = unitPrice ?? product.price;
   const totalPrice = formatPrice(priceEach * quantity);
@@ -122,8 +148,29 @@ export function formatSingleProductWhatsAppMessage({
     lines.push(`*Product Page:* ${productUrl}`);
   }
 
+  if (customerDetails && (customerDetails.name || customerDetails.phone || customerDetails.address)) {
+    lines.push(
+      '━━━━━━━━━━━━━━━━━━━━',
+      '👤 *CUSTOMER & DELIVERY DETAILS:*',
+      '━━━━━━━━━━━━━━━━━━━━'
+    );
+    if (customerDetails.name) lines.push(`• *Client Name:* ${customerDetails.name}`);
+    if (customerDetails.phone) lines.push(`• *Contact Phone:* ${customerDetails.phone}`);
+    if (customerDetails.address) lines.push(`• *Shipping Address:* ${customerDetails.address}`);
+    if (customerDetails.city || customerDetails.country) {
+      const locationLine = [customerDetails.city, customerDetails.country].filter(Boolean).join(', ');
+      lines.push(`• *City & Country:* ${locationLine}`);
+    }
+    if (customerDetails.postalCode) {
+      lines.push(`• *Postal / PIN Code:* ${customerDetails.postalCode}`);
+    }
+    if (customerDetails.notes) {
+      lines.push(`• *Delivery / Atelier Notes:* ${customerDetails.notes}`);
+    }
+  }
+
   lines.push(
-    `*Quantity:* ${quantity}`,
+    `\n*Quantity:* ${quantity}`,
     `*Total:* ${totalPrice} (${formatPrice(priceEach)} each)`,
     '━━━━━━━━━━━━━━━━━━━━',
     '\nPlease confirm piece availability, dispatch timeline, and share payment details. Thank you! 🌿'
@@ -136,7 +183,7 @@ export function formatSingleProductWhatsAppMessage({
  * Open WhatsApp with prefilled message
  */
 export function openWhatsApp(message, phoneNumber = WHATSAPP_PHONE) {
-  const cleanPhone = phoneNumber.replace(/[^0-9]/g, '');
+  const cleanPhone = String(phoneNumber).replace(/[^0-9]/g, '');
   const url = `https://wa.me/${cleanPhone}?text=${encodeURIComponent(message)}`;
   window.open(url, '_blank', 'noopener,noreferrer');
 }
