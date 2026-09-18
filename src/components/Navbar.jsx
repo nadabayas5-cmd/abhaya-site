@@ -130,11 +130,12 @@ export default function Navbar() {
       if (e.key === 'Escape') {
         if (isSearchOpen) setIsSearchOpen(false);
         if (shopDropdownOpen) setShopDropdownOpen(false);
+        if (mobileMenuOpen) setMobileMenuOpen(false);
       }
     };
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [isSearchOpen, shopDropdownOpen, setIsSearchOpen]);
+  }, [isSearchOpen, shopDropdownOpen, mobileMenuOpen, setIsSearchOpen]);
 
   const handleSearchSubmit = (e) => {
     e.preventDefault();
@@ -186,159 +187,33 @@ export default function Navbar() {
       <header className="sticky top-0 w-full z-[60] bg-[#7A0648]/95 backdrop-blur-md border-b border-white/20 transition-all duration-300 text-white font-semibold">
         <div className="flex justify-between items-center px-4 sm:px-6 lg:px-8 py-3.5 md:py-4 max-w-7xl mx-auto relative">
           
-          {/* Left: Desktop Navigation Links + Mobile Menu Trigger */}
-          <div className="flex items-center gap-4 lg:gap-8 z-10 shrink-0">
+          {/* Left: Desktop Navigation Links + Full-Screen Drawer Trigger */}
+          <div className="flex items-center gap-3 sm:gap-6 lg:gap-7 z-10 shrink-0">
             <button
               onClick={() => setMobileMenuOpen(true)}
               aria-label="Open Navigation Menu"
-              className="lg:hidden text-white focus:outline-none p-1.5 -ml-1 hover:bg-white/10 transition-colors flex items-center group cursor-pointer"
+              className="text-white focus:outline-none p-1.5 -ml-1 hover:bg-white/10 transition-colors flex items-center gap-2 group cursor-pointer"
             >
-              <Menu className="w-5 h-5 text-white" strokeWidth={1.5} />
+              <Menu className="w-5 h-5 text-white transition-transform group-hover:scale-110" strokeWidth={1.5} />
+              <span className="text-[11px] font-bold tracking-[0.14em] uppercase">Menu</span>
             </button>
 
             {/* Desktop Navigation Links */}
             <nav className="hidden lg:flex items-center gap-6 xl:gap-7 text-[12px] font-medium tracking-[0.08em] uppercase">
-              
-              {/* Shop Mega Menu Dropdown */}
-              <div 
-                className="relative" 
-                ref={shopMenuRef}
-                onMouseEnter={() => setShopDropdownOpen(true)}
-                onMouseLeave={() => setShopDropdownOpen(false)}
+              <button
+                onClick={() => {
+                  setOpenAccordions(prev => ({ ...prev, category: true }));
+                  setMobileMenuOpen(true);
+                }}
+                className={`transition-colors py-1 relative cursor-pointer ${
+                  currentView === 'shop' && selectedBadgeFilter !== 'Limited Edition' ? 'text-white font-semibold' : 'text-white/85 hover:text-white'
+                }`}
               >
-                <button
-                  onClick={() => handleNav('shop')}
-                  className={`transition-colors py-1 flex items-center gap-1 cursor-pointer ${
-                    currentView === 'shop' && selectedBadgeFilter !== 'Limited Edition' ? 'text-white font-semibold' : 'text-white/85 hover:text-white'
-                  }`}
-                >
-                  <span>Shop</span>
-                  <ChevronDown className={`w-3 h-3 transition-transform ${shopDropdownOpen ? 'rotate-180' : ''}`} />
-                  {currentView === 'shop' && selectedBadgeFilter !== 'Limited Edition' && (
-                    <span className="absolute bottom-0 left-0 w-full h-[1.5px] bg-white" />
-                  )}
-                </button>
-
-                {/* Mega Dropdown Menu (Full Luxury 4-Column Layout) */}
-                {shopDropdownOpen && (
-                  <div className="absolute left-0 top-full pt-2 w-[840px] xl:w-[920px] max-w-[calc(100vw-32px)] animate-fade-in z-50">
-                    <div className="bg-[#68043D] text-white shadow-2xl border border-white/20 p-5 lg:p-6 grid grid-cols-4 gap-5 rounded-none backdrop-blur-md">
-                      
-                      {/* Col 1: Categories */}
-                      <div className="space-y-3">
-                        <div className="text-[11px] uppercase tracking-wider text-[#FFD700] font-bold border-b border-white/15 pb-1">
-                          Categories
-                        </div>
-                        <div className="space-y-1 text-xs">
-                          {dynamicCategories.map((cat) => (
-                            <button
-                              key={cat.id}
-                              onClick={() => handleNav('shop', cat.id)}
-                              className="block w-full text-left py-1 text-white/90 hover:text-[#FFD700] hover:translate-x-1 transition-all cursor-pointer font-bold truncate"
-                            >
-                              {cat.name}
-                            </button>
-                          ))}
-                          <button
-                            onClick={() => handleNav('shop', null, null, null, null, null, false, null, null, null, 'Limited Edition')}
-                            className="block w-full text-left py-1 text-white/90 hover:text-[#FFD700] hover:translate-x-1 transition-all cursor-pointer font-bold"
-                          >
-                            Limited Edition ★
-                          </button>
-                          <button
-                            onClick={() => handleNav('shop', 'Wholesale')}
-                            className="block w-full text-left py-1.5 px-2 bg-white/10 text-[#FFD700] hover:bg-white/20 transition-colors font-bold rounded-xs cursor-pointer mt-2"
-                          >
-                            Wholesale Hub ★
-                          </button>
-                          <button
-                            onClick={() => handleNav('shop', 'All')}
-                            className="block w-full text-left pt-2 text-[#FFD700] font-bold hover:underline cursor-pointer text-[11px]"
-                          >
-                            Browse All Collections →
-                          </button>
-                        </div>
-                      </div>
-
-                      {/* Col 2: Abaya Styles (All 7 silhouettes) */}
-                      <div className="space-y-3 border-l border-white/15 pl-4">
-                        <div className="text-[11px] uppercase tracking-wider text-[#FFD700] font-bold border-b border-white/15 pb-1">
-                          Abaya Styles
-                        </div>
-                        <div className="space-y-1 text-[11px] text-white/80">
-                          {allStyles.map(s => (
-                            <button
-                              key={s.id}
-                              onClick={() => handleNav('shop', 'Abaya', null, null, s.name)}
-                              className="block w-full text-left py-0.5 hover:text-white hover:translate-x-0.5 transition-all cursor-pointer truncate"
-                              title={s.name}
-                            >
-                              • {s.name}
-                            </button>
-                          ))}
-                          <button
-                            onClick={() => handleNav('shop', 'Abaya')}
-                            className="block w-full text-left pt-2 text-white/90 font-bold hover:text-[#FFD700] cursor-pointer text-[11px]"
-                          >
-                            View All Abayas →
-                          </button>
-                        </div>
-                      </div>
-
-                      {/* Col 3: Artisan Craft & Works (All 7 works) */}
-                      <div className="space-y-3 border-l border-white/15 pl-4">
-                        <div className="text-[11px] uppercase tracking-wider text-[#FFD700] font-bold border-b border-white/15 pb-1">
-                          Artisan Works
-                        </div>
-                        <div className="space-y-1 text-[11px] text-white/80">
-                          {allWorks.map(w => (
-                            <button
-                              key={w.id}
-                              onClick={() => handleNav('shop', 'Abaya', null, null, null, w.name)}
-                              className="block w-full text-left py-0.5 hover:text-white hover:translate-x-0.5 transition-all cursor-pointer truncate"
-                              title={w.name}
-                            >
-                              • {w.name}
-                            </button>
-                          ))}
-                          <button
-                            onClick={() => handleNav('collections')}
-                            className="block w-full text-left pt-2 text-white/90 font-bold hover:text-[#FFD700] cursor-pointer text-[11px]"
-                          >
-                            Explore All Craft →
-                          </button>
-                        </div>
-                      </div>
-
-                      {/* Col 4: Wholesale B2B Cartons */}
-                      <div className="space-y-3 border-l border-white/15 pl-4">
-                        <div className="text-[11px] uppercase tracking-wider text-[#FFD700] font-bold border-b border-white/15 pb-1">
-                          Wholesale (B2B)
-                        </div>
-                        <div className="space-y-1 text-[11px] text-white/80">
-                          {allWholesaleTypes.map(wt => (
-                            <button
-                              key={wt.id}
-                              onClick={() => handleNav('shop', 'Wholesale', null, null, null, null, false, null, null, wt.name)}
-                              className="block w-full text-left py-0.5 hover:text-white hover:translate-x-0.5 transition-all cursor-pointer truncate"
-                              title={wt.name}
-                            >
-                              • {wt.name} Cartons
-                            </button>
-                          ))}
-                          <button
-                            onClick={() => handleNav('shop', 'Wholesale')}
-                            className="block w-full text-left pt-2 text-[#FFD700] font-bold hover:underline cursor-pointer text-[11px]"
-                          >
-                            Factory Bulk Export →
-                          </button>
-                        </div>
-                      </div>
-
-                    </div>
-                  </div>
+                <span>Shop</span>
+                {currentView === 'shop' && selectedBadgeFilter !== 'Limited Edition' && (
+                  <span className="absolute bottom-0 left-0 w-full h-[1.5px] bg-white" />
                 )}
-              </div>
+              </button>
 
               <button
                 onClick={() => handleNav('collections')}
@@ -502,18 +377,18 @@ export default function Navbar() {
       )}
 
       {/* ========================================================================= */}
-      {/* FULL LUXURY NAVIGATION DRAWER (Logo Violet Edition) */}
+      {/* FULL LUXURY NAVIGATION DRAWER (Logo Violet Edition - All Screens) */}
       {/* ========================================================================= */}
       {mobileMenuOpen && (
-        <div className="fixed inset-0 z-50 flex">
+        <div className="fixed inset-0 z-[70] flex">
           {/* Backdrop */}
           <div
-            className="fixed inset-0 bg-black/60 backdrop-blur-sm transition-opacity animate-fade-in"
+            className="fixed inset-0 bg-black/60 backdrop-blur-sm transition-opacity animate-fade-in cursor-pointer"
             onClick={() => setMobileMenuOpen(false)}
           />
 
           {/* Drawer Panel */}
-          <div className="relative flex flex-col w-[85%] max-w-sm bg-[#68043D] text-white h-full shadow-2xl z-10 overflow-hidden animate-slide-in-left border-r border-white/20 font-semibold">
+          <div className="relative flex flex-col w-[85%] sm:w-[380px] md:w-[420px] max-w-md bg-[#68043D] text-white h-full shadow-2xl z-10 overflow-hidden animate-slide-in-left border-r border-white/20 font-semibold">
             
             {/* Drawer Header */}
             <div className="flex items-center justify-between px-5 py-4 border-b border-white/20 bg-[#7A0648]">
@@ -671,7 +546,17 @@ export default function Navbar() {
                   onClick={() => handleNav('shop', null, null, null, null, null, false, null, null, null, 'Limited Edition')}
                   className="w-full flex items-center justify-between text-left text-xs uppercase tracking-wider font-semibold text-white py-1 hover:text-white/80 transition-colors cursor-pointer"
                 >
-                  <span>Limited Edition</span>
+                  <span className="text-[#FFD700] font-bold">Limited Edition ★</span>
+                </button>
+              </div>
+
+              {/* COLLECTIONS */}
+              <div className="pt-4">
+                <button
+                  onClick={() => handleNav('collections')}
+                  className="w-full flex items-center justify-between text-left text-xs uppercase tracking-wider font-semibold text-white py-1 hover:text-white/80 transition-colors cursor-pointer"
+                >
+                  <span>Collections</span>
                 </button>
               </div>
 
@@ -682,6 +567,16 @@ export default function Navbar() {
                   className="w-full flex items-center justify-between text-left text-xs uppercase tracking-wider font-semibold text-white py-1 hover:text-white/80 transition-colors cursor-pointer"
                 >
                   <span>Our Story</span>
+                </button>
+              </div>
+
+              {/* CONTACT */}
+              <div className="pt-4">
+                <button
+                  onClick={() => handleNav('contact')}
+                  className="w-full flex items-center justify-between text-left text-xs uppercase tracking-wider font-semibold text-white py-1 hover:text-white/80 transition-colors cursor-pointer"
+                >
+                  <span>Contact</span>
                 </button>
               </div>
 
