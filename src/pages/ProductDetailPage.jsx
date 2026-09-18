@@ -22,6 +22,8 @@ import {
   Sparkle,
   Info,
   Maximize2,
+  ZoomIn,
+  ZoomOut,
   X,
   Ruler,
   Globe,
@@ -291,6 +293,51 @@ export default function ProductDetailPage() {
     }
     touchStartX.current = 0;
     touchEndX.current = 0;
+  };
+
+  // Lightbox Zoom & Pan states
+  const [isZoomed, setIsZoomed] = useState(false);
+  const [zoomOffset, setZoomOffset] = useState({ x: 0, y: 0 });
+  const panStartRef = useRef({ x: 0, y: 0 });
+  const isDraggingRef = useRef(false);
+
+  // Reset zoom whenever lightbox modal opens/closes or active image changes
+  useEffect(() => {
+    setIsZoomed(false);
+    setZoomOffset({ x: 0, y: 0 });
+  }, [showLightboxModal, activeImageIdx]);
+
+  const toggleZoom = (e) => {
+    if (e) e.stopPropagation();
+    setIsZoomed((prev) => {
+      if (prev) {
+        setZoomOffset({ x: 0, y: 0 });
+        return false;
+      }
+      return true;
+    });
+  };
+
+  const handlePointerDown = (e) => {
+    if (!isZoomed) return;
+    isDraggingRef.current = true;
+    const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+    const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+    panStartRef.current = { x: clientX - zoomOffset.x, y: clientY - zoomOffset.y };
+  };
+
+  const handlePointerMove = (e) => {
+    if (!isZoomed || !isDraggingRef.current) return;
+    const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+    const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+    setZoomOffset({
+      x: clientX - panStartRef.current.x,
+      y: clientY - panStartRef.current.y
+    });
+  };
+
+  const handlePointerUp = () => {
+    isDraggingRef.current = false;
   };
 
   // Lock body scroll and enable keyboard arrows/Escape when lightbox is open
@@ -1143,83 +1190,127 @@ export default function ProductDetailPage() {
       {/* ========================================================================= */}
       {showLightboxModal && typeof document !== 'undefined' && createPortal(
         <div
-          className="fixed inset-0 bg-stone-950/95 backdrop-blur-md z-[99999] flex flex-col justify-between p-3 sm:p-6 select-none"
+          className="fixed inset-0 bg-black z-[99999] flex items-center justify-center select-none overflow-hidden"
           style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, zIndex: 99999 }}
-          onClick={() => setShowLightboxModal(false)}
-          onTouchStart={handleTouchStart}
-          onTouchMove={handleTouchMove}
-          onTouchEnd={handleTouchEnd}
+          onClick={() => {
+            if (isZoomed) {
+              setIsZoomed(false);
+              setZoomOffset({ x: 0, y: 0 });
+            } else {
+              setShowLightboxModal(false);
+            }
+          }}
+          onTouchStart={isZoomed ? handlePointerDown : handleTouchStart}
+          onTouchMove={isZoomed ? handlePointerMove : handleTouchMove}
+          onTouchEnd={isZoomed ? handlePointerUp : handleTouchEnd}
+          onMouseDown={handlePointerDown}
+          onMouseMove={handlePointerMove}
+          onMouseUp={handlePointerUp}
         >
-          {/* Header Bar: Title, Counter & Close Button */}
+          {/* Top Floating Header Bar */}
           <div
-            className="flex items-center justify-between text-white pb-3 pt-1 border-b border-white/10 shrink-0"
-            onClick={(e) => e.stopPropagation()}
+            className="absolute top-0 inset-x-0 z-30 flex items-center justify-between p-4 sm:p-6 bg-gradient-to-b from-black/80 via-black/40 to-transparent text-white pointer-events-none"
           >
-            <div className="flex items-center gap-3">
-              <span className="text-xs sm:text-sm font-serif tracking-wider uppercase text-stone-200 font-semibold truncate max-w-[200px] sm:max-w-md">
+            <div className="flex items-center gap-3 pointer-events-auto">
+              <span className="text-xs sm:text-sm font-serif tracking-wider uppercase text-stone-100 font-semibold truncate max-w-[180px] sm:max-w-md drop-shadow">
                 {product.name}
               </span>
               {images.length > 1 && (
-                <span className="text-[11px] font-mono tracking-widest text-stone-400 bg-white/10 px-2 py-0.5 rounded-full">
+                <span className="text-[11px] font-mono tracking-widest text-stone-300 bg-white/20 backdrop-blur-xs px-2.5 py-0.5 rounded-full drop-shadow">
                   {activeImageIdx + 1} / {images.length}
                 </span>
               )}
             </div>
 
-            <button
-              onClick={() => setShowLightboxModal(false)}
-              className="p-2 rounded-full text-stone-300 hover:text-white hover:bg-white/10 transition-colors cursor-pointer"
-              aria-label="Close full view"
-            >
-              <X className="w-6 h-6" />
-            </button>
+            <div className="flex items-center gap-2 pointer-events-auto">
+              <button
+                onClick={toggleZoom}
+                className="p-2.5 rounded-full bg-white/15 hover:bg-white/25 backdrop-blur-xs text-white transition-all cursor-pointer shadow-lg active:scale-95"
+                title={isZoomed ? "Reset view (1x)" : "Zoom in (2.4x)"}
+                aria-label={isZoomed ? "Zoom out" : "Zoom in"}
+              >
+                {isZoomed ? <ZoomOut className="w-5 h-5" /> : <ZoomIn className="w-5 h-5" />}
+              </button>
+              <button
+                onClick={() => setShowLightboxModal(false)}
+                className="p-2.5 rounded-full bg-white/15 hover:bg-white/25 backdrop-blur-xs text-white transition-all cursor-pointer shadow-lg active:scale-95"
+                aria-label="Close full view"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
           </div>
 
-          {/* Main Photo Area */}
+          {/* Edge-to-Edge Photo Container */}
           <div
-            className="flex-1 min-h-0 flex items-center justify-center relative py-2 sm:py-4 overflow-hidden"
-            onClick={(e) => e.stopPropagation()}
+            className="w-full h-full flex items-center justify-center relative overflow-hidden"
+            onClick={(e) => {
+              e.stopPropagation();
+              toggleZoom();
+            }}
           >
             <img
               src={images[activeImageIdx] || images[0]}
               alt={product.name}
-              className="max-h-[68vh] sm:max-h-[78vh] w-auto max-w-full object-contain rounded-xs shadow-2xl transition-all duration-300"
+              draggable={false}
+              className={`select-none ${
+                isDraggingRef.current ? 'transition-none' : 'transition-transform duration-300 ease-out'
+              } ${isZoomed ? 'cursor-grab active:cursor-grabbing' : 'cursor-zoom-in'}`}
+              style={{
+                width: '100%',
+                height: '100%',
+                objectFit: 'contain',
+                transform: isZoomed
+                  ? `scale(2.4) translate(${zoomOffset.x / 2.4}px, ${zoomOffset.y / 2.4}px)`
+                  : 'scale(1) translate(0px, 0px)'
+              }}
             />
 
-            {images.length > 1 && (
+            {/* Previous & Next Arrows (only when multiple images and not zoomed) */}
+            {images.length > 1 && !isZoomed && (
               <>
                 <button
-                  onClick={prevImage}
-                  className="absolute left-1 sm:left-4 top-1/2 -translate-y-1/2 w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-black/60 hover:bg-black text-white flex items-center justify-center border border-white/20 transition-all cursor-pointer shadow-lg active:scale-95"
+                  onClick={(e) => { e.stopPropagation(); prevImage(); }}
+                  className="absolute left-2 sm:left-6 top-1/2 -translate-y-1/2 w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-black/60 hover:bg-black/90 text-white flex items-center justify-center border border-white/25 transition-all cursor-pointer shadow-xl active:scale-95 z-20"
                   aria-label="Previous image"
                 >
                   <ChevronLeft className="w-5 h-5 sm:w-6 sm:h-6" />
                 </button>
                 <button
-                  onClick={nextImage}
-                  className="absolute right-1 sm:right-4 top-1/2 -translate-y-1/2 w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-black/60 hover:bg-black text-white flex items-center justify-center border border-white/20 transition-all cursor-pointer shadow-lg active:scale-95"
+                  onClick={(e) => { e.stopPropagation(); nextImage(); }}
+                  className="absolute right-2 sm:right-6 top-1/2 -translate-y-1/2 w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-black/60 hover:bg-black/90 text-white flex items-center justify-center border border-white/25 transition-all cursor-pointer shadow-xl active:scale-95 z-20"
                   aria-label="Next image"
                 >
                   <ChevronRight className="w-5 h-5 sm:w-6 sm:h-6" />
                 </button>
               </>
             )}
+
+            {/* Floating Tap to Zoom Hint */}
+            {!isZoomed && (
+              <div className="absolute bottom-6 sm:bottom-8 pointer-events-none z-20">
+                <span className="bg-black/70 backdrop-blur-md text-white/90 text-[11px] uppercase tracking-wider font-medium px-3.5 py-1.5 rounded-full border border-white/15 shadow-lg flex items-center gap-1.5">
+                  <ZoomIn className="w-3.5 h-3.5 text-amber-300" />
+                  Tap photo to zoom (2.4x)
+                </span>
+              </div>
+            )}
           </div>
 
-          {/* Bottom Thumbnails Strip */}
-          {images.length > 1 && (
+          {/* Bottom Thumbnails Strip (if multiple images and not zoomed) */}
+          {images.length > 1 && !isZoomed && (
             <div
-              className="pt-2 sm:pt-3 border-t border-white/10 flex items-center justify-center gap-2 overflow-x-auto pb-1 shrink-0"
+              className="absolute bottom-0 inset-x-0 z-30 p-3 bg-gradient-to-t from-black/85 via-black/40 to-transparent flex items-center justify-center gap-2 overflow-x-auto pb-4"
               onClick={(e) => e.stopPropagation()}
             >
               {images.map((imgUrl, idx) => (
                 <button
                   key={idx}
                   onClick={() => setActiveImageIdx(idx)}
-                  className={`relative w-12 h-16 sm:w-14 sm:h-20 rounded-xs overflow-hidden border-2 transition-all cursor-pointer flex-shrink-0 ${
+                  className={`relative w-11 h-15 sm:w-13 sm:h-18 rounded-xs overflow-hidden border-2 transition-all cursor-pointer flex-shrink-0 ${
                     activeImageIdx === idx
-                      ? 'border-white scale-105 shadow-md'
-                      : 'border-transparent opacity-50 hover:opacity-100'
+                      ? 'border-white scale-105 shadow-xl ring-2 ring-white/30'
+                      : 'border-transparent opacity-60 hover:opacity-100'
                   }`}
                   aria-label={`View photo ${idx + 1}`}
                 >
