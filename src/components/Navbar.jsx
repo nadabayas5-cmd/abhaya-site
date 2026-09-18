@@ -546,7 +546,7 @@ export default function Navbar() {
                   onClick={() => handleNav('shop', null, null, null, null, null, false, null, null, null, 'Limited Edition')}
                   className="w-full flex items-center justify-between text-left text-xs uppercase tracking-wider font-semibold text-white py-1 hover:text-white/80 transition-colors cursor-pointer"
                 >
-                  <span className="text-[#FFD700] font-bold">Limited Edition ★</span>
+                  <span>Limited Edition</span>
                 </button>
               </div>
 

@@ -153,7 +153,7 @@ export default function ShopPage() {
       { id: 'Inner & Prayer dress', label: 'Inner & Prayer Dress' },
       { id: 'Kids abaya', label: 'Kids Abaya' },
       { id: 'Wholesale', label: 'Wholesale (B2B)' },
-      { id: 'Limited Edition', label: 'Limited Edition ★' }
+      { id: 'Limited Edition', label: 'Limited Edition' }
     ];
     PRODUCTS.forEach(p => {
       if (p.category && !baseTabs.some(t => t.id.toLowerCase() === p.category.toLowerCase())) {
