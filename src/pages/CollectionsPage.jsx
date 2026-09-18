@@ -246,6 +246,27 @@ export default function CollectionsPage() {
     if (searchQuery && searchQuery.trim() !== '') {
       return searchQuery;
     }
+    if (selectedCategories.length === 1 && selectedSubcategories.length === 1) {
+      return `${selectedCategories[0]} - ${selectedSubcategories[0]}`;
+    }
+    if (selectedCategories.length === 1) {
+      return selectedCategories[0];
+    }
+    if (selectedCategories.length > 1) {
+      return selectedCategories.join(' & ');
+    }
+    if (selectedSubcategories.length === 1) {
+      return selectedSubcategories[0];
+    }
+    if (selectedSubcategories.length > 1) {
+      return selectedSubcategories.join(' & ');
+    }
+    if (selectedWholesaleTypes.length === 1) {
+      return selectedWholesaleTypes[0];
+    }
+    if (selectedWholesaleTypes.length > 1) {
+      return selectedWholesaleTypes.join(' & ');
+    }
     if (selectedStyles.length === 1) {
       return selectedStyles[0];
     }
@@ -262,7 +283,15 @@ export default function CollectionsPage() {
       return `${selectedColors[0]} Abayas`;
     }
     return 'SHOP';
-  }, [searchQuery, selectedStyles, selectedWorks, selectedColors]);
+  }, [
+    searchQuery,
+    selectedCategories,
+    selectedSubcategories,
+    selectedWholesaleTypes,
+    selectedStyles,
+    selectedWorks,
+    selectedColors
+  ]);
 
   // Handle Sort Menu Outside Click
   useEffect(() => {
@@ -510,7 +539,38 @@ export default function CollectionsPage() {
     <div className="bg-[#FAF8F5] min-h-screen text-[#1E141B] pb-20 font-semibold">
       
       {/* 1. Header Banner */}
-      <div className="pt-6 pb-4 sm:pt-8 sm:pb-5 px-4 max-w-7xl mx-auto text-center">
+      <div className="pt-4 pb-3 sm:pt-6 sm:pb-4 px-4 max-w-7xl mx-auto text-center">
+        {/* Breadcrumb Navigation */}
+        <nav aria-label="Breadcrumb" className="inline-flex items-center justify-center flex-wrap gap-x-2 gap-y-1 text-[11px] sm:text-xs uppercase tracking-widest text-stone-500 mb-2 leading-none">
+          <button 
+            type="button"
+            onClick={() => navigateTo('home')} 
+            className="hover:text-[#7A0648] transition-colors cursor-pointer p-0 bg-transparent border-0 font-medium inline-flex items-center"
+          >
+            Home
+          </button>
+          <span className="text-stone-300 font-light select-none shrink-0" aria-hidden="true">/</span>
+          {activeFiltersCount > 0 || (searchQuery && searchQuery.trim()) ? (
+            <>
+              <button 
+                type="button"
+                onClick={clearAllFilters} 
+                className="hover:text-[#7A0648] transition-colors cursor-pointer text-stone-600 font-medium p-0 bg-transparent border-0 inline-flex items-center"
+              >
+                Shop
+              </button>
+              <span className="text-stone-300 font-light select-none shrink-0" aria-hidden="true">/</span>
+              <span className="text-[#7A0648] font-bold truncate max-w-[280px] sm:max-w-md">
+                {pageTitle}
+              </span>
+            </>
+          ) : (
+            <span className="text-[#7A0648] font-bold">
+              Shop
+            </span>
+          )}
+        </nav>
+
         {/* Collection Title / Dynamic search or filter term */}
         <div className="inline-flex items-center justify-center gap-2.5">
           <h1 className="text-xl sm:text-2xl md:text-3xl font-bold tracking-[0.08em] uppercase text-[#1E141B] drop-shadow-xs">

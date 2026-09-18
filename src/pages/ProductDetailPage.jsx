@@ -457,40 +457,65 @@ export default function ProductDetailPage() {
   };
 
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3 sm:py-6 space-y-10 sm:space-y-16 animate-fade-in pb-28 lg:pb-16 text-[#1E141B]">
+    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-2.5 pb-28 lg:pb-16 text-[#1E141B] animate-fade-in">
       
       {/* 1. Breadcrumbs Navigation */}
-      <nav className="flex items-center space-x-2 text-[11px] sm:text-xs uppercase tracking-widest text-stone-500 overflow-x-auto no-scrollbar py-1">
-        <button onClick={() => navigateTo('home')} className="hover:text-[#7A0648] transition-colors shrink-0 cursor-pointer">
+      <nav 
+        aria-label="Breadcrumb"
+        className="flex items-center flex-wrap gap-x-2 gap-y-1.5 text-[11px] sm:text-xs uppercase tracking-widest text-stone-500 pt-1 pb-3 mb-6 sm:mb-8 border-b border-stone-200/60 leading-none"
+      >
+        <button 
+          type="button"
+          onClick={() => navigateTo('home')} 
+          className="hover:text-[#7A0648] transition-colors shrink-0 cursor-pointer font-medium p-0 bg-transparent border-0 inline-flex items-center"
+        >
           Home
         </button>
-        <span className="text-stone-300">/</span>
+        <span className="text-stone-300 font-light select-none shrink-0" aria-hidden="true">/</span>
         <button
-          onClick={() => navigateTo('shop', null, null, null, null, null, product.category || 'ABAYA')}
-          className="hover:text-[#7A0648] transition-colors shrink-0 cursor-pointer font-semibold text-stone-700"
+          type="button"
+          onClick={() => navigateTo('shop', null, product.category || 'Abaya')}
+          className="hover:text-[#7A0648] transition-colors shrink-0 cursor-pointer font-semibold text-stone-700 p-0 bg-transparent border-0 inline-flex items-center"
         >
           {product.category || 'Abayas'}
         </button>
         {product.subcategory && (
           <>
-            <span className="text-stone-300">/</span>
-            <span className="text-stone-500 font-medium shrink-0">{product.subcategory}</span>
+            <span className="text-stone-300 font-light select-none shrink-0" aria-hidden="true">/</span>
+            <button
+              type="button"
+              onClick={() => navigateTo('shop', null, product.category || null, null, null, null, null, false, null, product.subcategory)}
+              className="hover:text-[#7A0648] transition-colors shrink-0 cursor-pointer font-medium text-stone-600 p-0 bg-transparent border-0 inline-flex items-center"
+            >
+              {product.subcategory}
+            </button>
           </>
         )}
         {product.wholesaleType && (
           <>
-            <span className="text-stone-300">/</span>
-            <span className="text-amber-800 font-semibold shrink-0">{product.wholesaleType}</span>
+            <span className="text-stone-300 font-light select-none shrink-0" aria-hidden="true">/</span>
+            <button
+              type="button"
+              onClick={() => navigateTo('shop', null, product.category || null, null, null, null, null, false, null, null, product.wholesaleType)}
+              className="hover:text-[#7A0648] transition-colors shrink-0 cursor-pointer font-semibold text-amber-800 p-0 bg-transparent border-0 inline-flex items-center"
+            >
+              {product.wholesaleType}
+            </button>
           </>
         )}
-        <span className="text-stone-300">/</span>
-        <span className="text-[#7A0648] font-bold truncate max-w-[200px] sm:max-w-none">
+        <span className="text-stone-300 font-light select-none shrink-0" aria-hidden="true">/</span>
+        <span 
+          className="text-[#7A0648] font-bold break-words sm:truncate max-w-[280px] sm:max-w-md lg:max-w-none shrink min-w-0" 
+          title={product.name}
+        >
           {product.name}
         </span>
       </nav>
 
-      {/* 2. Main 2-Column Product Layout */}
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-14 items-start">
+      {/* Main Page Sections */}
+      <div className="space-y-10 sm:space-y-16">
+        {/* 2. Main 2-Column Product Layout */}
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-14 items-start">
         
         {/* ========================================================================= */}
         {/* LEFT COLUMN: PRODUCT GALLERY (Prestige Stacked / Lightbox)                */}
@@ -1118,6 +1143,8 @@ export default function ProductDetailPage() {
           ))}
         </div>
       </section>
+
+      </div>
 
       {/* ========================================================================= */}
       {/* 5. STICKY BOTTOM ACTION BAR (Mobile & Tablet)                             */}
