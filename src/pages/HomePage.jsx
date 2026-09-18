@@ -28,6 +28,7 @@ const WORK_IMAGES = {
   'Printed Abaya':           getAssetUrl('collection-images/work_printed.jpg'),
   'Lace Work Abaya':         getAssetUrl('collection-images/work_lacework.jpg'),
   'plain':                   getAssetUrl('collection-images/work_plain.jpg'),
+  'Others':                  getAssetUrl('collection-images/work_others.jpg'),
 };
 
 const STYLES_LIST = [
@@ -48,6 +49,7 @@ const WORKS_LIST = [
   'Printed Abaya',
   'Lace Work Abaya',
   'plain',
+  'Others',
 ];
 
 export default function HomePage() {

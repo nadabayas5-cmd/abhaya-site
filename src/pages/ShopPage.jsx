@@ -276,17 +276,20 @@ export default function ShopPage() {
         const workLower = selectedWorkFilter.toLowerCase();
         const primaryWork = (product.defaultWork || '').toLowerCase();
         const isPlainFilter = workLower === 'plain/basic' || workLower === 'plain' || workLower === 'basic';
+        const isOthersFilter = workLower === 'others' || workLower === 'other';
         let matchesWork = false;
 
         if (primaryWork) {
           matchesWork = primaryWork === workLower ||
-            (isPlainFilter && (primaryWork === 'plain' || primaryWork === 'plain/basic' || primaryWork === 'basic'));
+            (isPlainFilter && (primaryWork === 'plain' || primaryWork === 'plain/basic' || primaryWork === 'basic')) ||
+            (isOthersFilter && (primaryWork === 'others' || primaryWork === 'other'));
         }
         if (!matchesWork && Array.isArray(product.works) && product.works.length > 0) {
           matchesWork = product.works.some(w => {
             const wLower = w.toLowerCase();
             return wLower === workLower ||
-              (isPlainFilter && (wLower === 'plain' || wLower === 'plain/basic' || wLower === 'basic'));
+              (isPlainFilter && (wLower === 'plain' || wLower === 'plain/basic' || wLower === 'basic')) ||
+              (isOthersFilter && (wLower === 'others' || wLower === 'other'));
           });
         }
 

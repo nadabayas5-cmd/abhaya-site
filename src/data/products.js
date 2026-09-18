@@ -94,6 +94,12 @@ export const ABAYA_WORKS = [
     name: "Plain/Basic",
     description: "Pure unembellished minimalist luxury focusing on fabric drape and clean cuts",
     tag: "Minimalist"
+  },
+  {
+    id: "others",
+    name: "Others",
+    description: "Bespoke handcrafted cutwork, patchwork, origami pleats, and unique mixed artisanal crafts",
+    tag: "Eclectic Artisan"
   }
 ];
 
@@ -388,6 +394,39 @@ export const PRODUCTS = [
     fabricDetails: "100% Grade 6A Pure Mulberry Silk with artisanal finished edges.",
     stylingAdvice: "Perfect for daytime diplomacy and evening cocktail gatherings.",
     careInstructions: "Specialist silk hand wash only."
+  },
+  {
+    id: "bespoke-pleated-craft-abaya",
+    name: "Artisanal Pleated Espresso Abaya",
+    subtitle: "Architectural Origami Pleating & Hand-Beaded Cuffs",
+    price: 198,
+    priceInr: 4500,
+    originalPrice: 260,
+    category: "Abaya",
+    badge: "Atelier Bespoke",
+    targetRegion: "all",
+    rating: 5.0,
+    reviewsCount: 34,
+    isVioletEdition: true,
+    defaultStyle: "Open abaya",
+    defaultWork: "Others",
+    styles: ABAYA_STYLES.map(s => s.name),
+    works: ABAYA_WORKS.map(w => w.name),
+    image: "/collection-images/work_others.jpg",
+    gallery: [
+      "/collection-images/work_others.jpg"
+    ],
+    colors: [
+      { name: "Midnight Espresso", hex: "#2E1C1A", imageIndex: 0 },
+      { name: "Plum Noir", hex: "#260A22", imageIndex: 0 }
+    ],
+    color: "Midnight Espresso",
+    sizes: ABAYA_SIZES.map(s => s.label),
+    stockCount: 8,
+    description: "A testament to experimental atelier craftsmanship. Features bespoke geometric origami sleeve pleats bordered by tone-on-tone hand beading, offering a contemporary couture statement for discerning collectors.",
+    fabricDetails: "100% Ultra-Fine Crepe de Chine & Structured Mulberry Silk Organza. Non-crease bespoke pleat setting.",
+    stylingAdvice: "Wear open over high-contrast silk under-slips or fasten at the collar for a minimalist architectural column silhouette.",
+    careInstructions: "Professional dry clean only to preserve artisanal pleating structure."
   },
 
   // ── 2. SHAILA / SHAWL CATEGORY PRODUCTS ──

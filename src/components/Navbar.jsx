@@ -79,7 +79,7 @@ export default function Navbar() {
     return list;
   }, [PRODUCTS]);
 
-  // Complete Artisan Works (all 7 craftsmanship works + catalog custom)
+  // Complete Artisan Works (all 8 craftsmanship works + catalog custom)
   const allWorks = React.useMemo(() => {
     const list = [...ABAYA_WORKS];
     if (Array.isArray(PRODUCTS)) {

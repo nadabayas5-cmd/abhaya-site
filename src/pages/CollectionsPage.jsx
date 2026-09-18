@@ -418,12 +418,21 @@ export default function CollectionsPage() {
           const wLower = sel.toLowerCase();
           const primaryWork = (product.defaultWork || '').toLowerCase();
           const isPlainFilter = wLower === 'plain/basic' || wLower === 'plain' || wLower === 'basic';
+          const isOthersFilter = wLower === 'others' || wLower === 'other';
           if (primaryWork) {
-            if (primaryWork === wLower || (isPlainFilter && (primaryWork === 'plain' || primaryWork === 'plain/basic' || primaryWork === 'basic'))) return true;
+            if (
+              primaryWork === wLower ||
+              (isPlainFilter && (primaryWork === 'plain' || primaryWork === 'plain/basic' || primaryWork === 'basic')) ||
+              (isOthersFilter && (primaryWork === 'others' || primaryWork === 'other'))
+            ) return true;
           }
           return Array.isArray(product.works) && product.works.some(w => {
             const wItemLower = w.toLowerCase();
-            return wItemLower === wLower || (isPlainFilter && (wItemLower === 'plain' || wItemLower === 'plain/basic' || wItemLower === 'basic'));
+            return (
+              wItemLower === wLower ||
+              (isPlainFilter && (wItemLower === 'plain' || wItemLower === 'plain/basic' || wItemLower === 'basic')) ||
+              (isOthersFilter && (wItemLower === 'others' || wItemLower === 'other'))
+            );
           });
         });
         if (!hasMatch) return false;
