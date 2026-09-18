@@ -143,16 +143,17 @@ export default function ShopPage() {
     };
   }, [mobileFilterOpen]);
 
-  // Main Category Tabs (dynamically includes any custom category from products)
+  // Main Category Tabs (dynamically includes any custom category from products + Limited Edition)
   const categoryTabs = useMemo(() => {
     const baseTabs = [
       { id: 'All', label: 'All Collections' },
       { id: 'Abaya', label: 'Abaya' },
       { id: 'Shaila/Shawl', label: 'Shaila / Shawl' },
-      { id: 'Hijab', label: 'Hijaab' },
+      { id: 'Hijab', label: 'Hijab, Niqab & Gloves' },
       { id: 'Inner & Prayer dress', label: 'Inner & Prayer Dress' },
       { id: 'Kids abaya', label: 'Kids Abaya' },
-      { id: 'Wholesale', label: 'Wholesale' }
+      { id: 'Wholesale', label: 'Wholesale (B2B)' },
+      { id: 'Limited Edition', label: 'Limited Edition ★' }
     ];
     PRODUCTS.forEach(p => {
       if (p.category && !baseTabs.some(t => t.id.toLowerCase() === p.category.toLowerCase())) {
@@ -370,8 +371,28 @@ export default function ShopPage() {
   ]);
 
   const handleCategoryChange = (catId) => {
+    if (catId === 'Limited Edition') {
+      setSelectedCategory('All');
+      if (setSelectedCategoryFilter) setSelectedCategoryFilter('All');
+      setSelectedBadge('Limited Edition');
+      if (setContextBadgeFilter) setContextBadgeFilter('Limited Edition');
+      setSelectedStyleFilter('All');
+      if (setContextStyleFilter) setContextStyleFilter('All');
+      setSelectedWorkFilter('All');
+      if (setContextWorkFilter) setContextWorkFilter('All');
+      setSelectedWholesaleType('All');
+      if (setContextWholesaleTypeFilter) setContextWholesaleTypeFilter('All');
+      setSelectedSubcategory('All');
+      if (setContextSubcategoryFilter) setContextSubcategoryFilter('All');
+      setSelectedShade('All');
+      if (setContextColorFilter) setContextColorFilter('All');
+      return;
+    }
+
     setSelectedCategory(catId);
     if (setSelectedCategoryFilter) setSelectedCategoryFilter(catId);
+    setSelectedBadge('All');
+    if (setContextBadgeFilter) setContextBadgeFilter('All');
     setSelectedStyleFilter('All');
     if (setContextStyleFilter) setContextStyleFilter('All');
     setSelectedWorkFilter('All');
@@ -382,8 +403,6 @@ export default function ShopPage() {
     if (setContextSubcategoryFilter) setContextSubcategoryFilter('All');
     setSelectedShade('All');
     if (setContextColorFilter) setContextColorFilter('All');
-    setSelectedBadge('All');
-    if (setContextBadgeFilter) setContextBadgeFilter('All');
   };
 
   const resetFilters = () => {
@@ -467,11 +486,13 @@ export default function ShopPage() {
         </div>
       </div>
 
-      {/* 2. Primary Category Tabs (All 6 Categories) */}
+      {/* 2. Primary Category Tabs (All Categories) */}
       <div className="border-b border-stone-200 bg-white">
         <div className="flex items-center gap-4 sm:gap-6 overflow-x-auto no-scrollbar py-1 -mx-4 px-4 sm:mx-0 sm:px-0">
           {categoryTabs.map((tab) => {
-            const isActive = selectedCategory === tab.id;
+            const isActive = tab.id === 'Limited Edition'
+              ? (selectedBadge === 'Limited Edition')
+              : (selectedCategory === tab.id && selectedBadge !== 'Limited Edition');
             return (
               <button
                 key={tab.id}

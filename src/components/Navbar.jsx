@@ -36,7 +36,8 @@ export default function Navbar() {
     searchQuery,
     setSearchQuery,
     selectedBadgeFilter,
-    adminEnabled
+    adminEnabled,
+    PRODUCTS
   } = useShop();
 
   const [searchTerm, setSearchTerm] = useState('');
@@ -45,6 +46,64 @@ export default function Navbar() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [shopDropdownOpen, setShopDropdownOpen] = useState(false);
   const shopMenuRef = useRef(null);
+
+  // Dynamic catalog-aware categories
+  const dynamicCategories = React.useMemo(() => {
+    const baseCats = [
+      { id: 'Abaya', name: 'Abaya' },
+      { id: 'Shaila/Shawl', name: 'Shaila / Shawl' },
+      { id: 'Hijab', name: 'Hijab, Niqab & Gloves' },
+      { id: 'Inner & Prayer dress', name: 'Inner & Prayer Dress' },
+      { id: 'Kids abaya', name: 'Kids Abaya' },
+    ];
+    if (Array.isArray(PRODUCTS)) {
+      PRODUCTS.forEach(p => {
+        if (p.category && !baseCats.some(c => c.id.toLowerCase() === p.category.toLowerCase()) && p.category.toLowerCase() !== 'wholesale') {
+          baseCats.push({ id: p.category, name: p.category });
+        }
+      });
+    }
+    return baseCats;
+  }, [PRODUCTS]);
+
+  // Complete Abaya Styles (all 7 silhouettes + catalog custom)
+  const allStyles = React.useMemo(() => {
+    const list = [...ABAYA_STYLES];
+    if (Array.isArray(PRODUCTS)) {
+      PRODUCTS.forEach(p => {
+        if (p.defaultStyle && !list.some(s => s.name.toLowerCase() === p.defaultStyle.toLowerCase())) {
+          list.push({ id: p.defaultStyle.toLowerCase().replace(/\s+/g, '-'), name: p.defaultStyle });
+        }
+      });
+    }
+    return list;
+  }, [PRODUCTS]);
+
+  // Complete Artisan Works (all 7 craftsmanship works + catalog custom)
+  const allWorks = React.useMemo(() => {
+    const list = [...ABAYA_WORKS];
+    if (Array.isArray(PRODUCTS)) {
+      PRODUCTS.forEach(p => {
+        if (p.defaultWork && !list.some(w => w.name.toLowerCase() === p.defaultWork.toLowerCase())) {
+          list.push({ id: p.defaultWork.toLowerCase().replace(/\s+/g, '-'), name: p.defaultWork });
+        }
+      });
+    }
+    return list;
+  }, [PRODUCTS]);
+
+  // Complete Wholesale Types (all 6 types + catalog custom)
+  const allWholesaleTypes = React.useMemo(() => {
+    const list = [...WHOLESALE_TYPES];
+    if (Array.isArray(PRODUCTS)) {
+      PRODUCTS.forEach(p => {
+        if (p.wholesaleType && !list.some(wt => (wt.name || wt).toLowerCase() === p.wholesaleType.toLowerCase())) {
+          list.push({ id: p.wholesaleType.toLowerCase().replace(/\s+/g, '-'), name: p.wholesaleType });
+        }
+      });
+    }
+    return list;
+  }, [PRODUCTS]);
   const [openAccordions, setOpenAccordions] = useState({
     category: true,
     work: false,
@@ -160,93 +219,118 @@ export default function Navbar() {
                   )}
                 </button>
 
-                {/* Mega Dropdown Menu */}
+                {/* Mega Dropdown Menu (Full Luxury 4-Column Layout) */}
                 {shopDropdownOpen && (
-                  <div className="absolute left-0 top-full pt-2 w-[520px] animate-fade-in z-50">
-                    <div className="bg-[#68043D] text-white shadow-2xl border border-white/20 p-5 grid grid-cols-2 gap-5">
+                  <div className="absolute left-0 top-full pt-2 w-[840px] xl:w-[920px] max-w-[calc(100vw-32px)] animate-fade-in z-50">
+                    <div className="bg-[#68043D] text-white shadow-2xl border border-white/20 p-5 lg:p-6 grid grid-cols-4 gap-5 rounded-none backdrop-blur-md">
                       
                       {/* Col 1: Categories */}
                       <div className="space-y-3">
                         <div className="text-[11px] uppercase tracking-wider text-[#FFD700] font-bold border-b border-white/15 pb-1">
                           Categories
                         </div>
-                        <div className="space-y-1.5 text-xs">
-                          <button
-                            onClick={() => handleNav('shop', 'Abaya')}
-                            className="block w-full text-left py-1 text-white/90 hover:text-[#FFD700] hover:translate-x-1 transition-all cursor-pointer font-bold"
-                          >
-                            Abaya
-                          </button>
-                          <button
-                            onClick={() => handleNav('shop', 'Shaila/Shawl')}
-                            className="block w-full text-left py-1 text-white/90 hover:text-[#FFD700] hover:translate-x-1 transition-all cursor-pointer font-bold"
-                          >
-                            Shaila / Shawl
-                          </button>
-                          <button
-                            onClick={() => handleNav('shop', 'Hijab')}
-                            className="block w-full text-left py-1 text-white/90 hover:text-[#FFD700] hover:translate-x-1 transition-all cursor-pointer font-bold"
-                          >
-                            Hijab, Niqab & Gloves
-                          </button>
-                          <button
-                            onClick={() => handleNav('shop', 'Inner & Prayer dress')}
-                            className="block w-full text-left py-1 text-white/90 hover:text-[#FFD700] hover:translate-x-1 transition-all cursor-pointer font-bold"
-                          >
-                            Inner & Prayer Dress
-                          </button>
-                          <button
-                            onClick={() => handleNav('shop', 'Kids abaya')}
-                            className="block w-full text-left py-1 text-white/90 hover:text-[#FFD700] hover:translate-x-1 transition-all cursor-pointer font-bold"
-                          >
-                            Kids Abaya
-                          </button>
-                          <button
-                            onClick={() => handleNav('shop', 'Wholesale')}
-                            className="block w-full text-left py-1.5 px-2 bg-white/10 text-[#FFD700] hover:bg-white/20 transition-colors font-bold rounded-xs cursor-pointer"
-                          >
-                            Wholesale (B2B Bulk Hub) ★
-                          </button>
+                        <div className="space-y-1 text-xs">
+                          {dynamicCategories.map((cat) => (
+                            <button
+                              key={cat.id}
+                              onClick={() => handleNav('shop', cat.id)}
+                              className="block w-full text-left py-1 text-white/90 hover:text-[#FFD700] hover:translate-x-1 transition-all cursor-pointer font-bold truncate"
+                            >
+                              {cat.name}
+                            </button>
+                          ))}
                           <button
                             onClick={() => handleNav('shop', null, null, null, null, null, false, null, null, null, 'Limited Edition')}
                             className="block w-full text-left py-1 text-white/90 hover:text-[#FFD700] hover:translate-x-1 transition-all cursor-pointer font-bold"
                           >
-                            Limited Edition
+                            Limited Edition ★
+                          </button>
+                          <button
+                            onClick={() => handleNav('shop', 'Wholesale')}
+                            className="block w-full text-left py-1.5 px-2 bg-white/10 text-[#FFD700] hover:bg-white/20 transition-colors font-bold rounded-xs cursor-pointer mt-2"
+                          >
+                            Wholesale Hub ★
+                          </button>
+                          <button
+                            onClick={() => handleNav('shop', 'All')}
+                            className="block w-full text-left pt-2 text-[#FFD700] font-bold hover:underline cursor-pointer text-[11px]"
+                          >
+                            Browse All Collections →
                           </button>
                         </div>
                       </div>
 
-                      {/* Col 2: Abaya Silhouettes & Craftsmanship Works */}
-                      <div className="space-y-3 border-l border-white/15 pl-5">
+                      {/* Col 2: Abaya Styles (All 7 silhouettes) */}
+                      <div className="space-y-3 border-l border-white/15 pl-4">
                         <div className="text-[11px] uppercase tracking-wider text-[#FFD700] font-bold border-b border-white/15 pb-1">
-                          Abaya Styles & Works
+                          Abaya Styles
                         </div>
                         <div className="space-y-1 text-[11px] text-white/80">
-                          <div className="text-[10px] uppercase font-bold text-white/50 tracking-wider">Styles</div>
-                          {ABAYA_STYLES.slice(0, 4).map(s => (
+                          {allStyles.map(s => (
                             <button
                               key={s.id}
                               onClick={() => handleNav('shop', 'Abaya', null, null, s.name)}
-                              className="block w-full text-left py-0.5 hover:text-white transition-colors cursor-pointer"
+                              className="block w-full text-left py-0.5 hover:text-white hover:translate-x-0.5 transition-all cursor-pointer truncate"
+                              title={s.name}
                             >
                               • {s.name}
                             </button>
                           ))}
-                          <div className="text-[10px] uppercase font-bold text-white/50 tracking-wider pt-1.5">Artisan Works</div>
-                          {ABAYA_WORKS.slice(0, 4).map(w => (
+                          <button
+                            onClick={() => handleNav('shop', 'Abaya')}
+                            className="block w-full text-left pt-2 text-white/90 font-bold hover:text-[#FFD700] cursor-pointer text-[11px]"
+                          >
+                            View All Abayas →
+                          </button>
+                        </div>
+                      </div>
+
+                      {/* Col 3: Artisan Craft & Works (All 7 works) */}
+                      <div className="space-y-3 border-l border-white/15 pl-4">
+                        <div className="text-[11px] uppercase tracking-wider text-[#FFD700] font-bold border-b border-white/15 pb-1">
+                          Artisan Works
+                        </div>
+                        <div className="space-y-1 text-[11px] text-white/80">
+                          {allWorks.map(w => (
                             <button
                               key={w.id}
                               onClick={() => handleNav('shop', 'Abaya', null, null, null, w.name)}
-                              className="block w-full text-left py-0.5 hover:text-white transition-colors cursor-pointer"
+                              className="block w-full text-left py-0.5 hover:text-white hover:translate-x-0.5 transition-all cursor-pointer truncate"
+                              title={w.name}
                             >
                               • {w.name}
                             </button>
                           ))}
                           <button
-                            onClick={() => handleNav('shop', 'All')}
-                            className="block w-full text-left pt-2 text-[#FFD700] font-bold hover:underline cursor-pointer text-xs"
+                            onClick={() => handleNav('collections')}
+                            className="block w-full text-left pt-2 text-white/90 font-bold hover:text-[#FFD700] cursor-pointer text-[11px]"
                           >
-                            Browse All Collections →
+                            Explore All Craft →
+                          </button>
+                        </div>
+                      </div>
+
+                      {/* Col 4: Wholesale B2B Cartons */}
+                      <div className="space-y-3 border-l border-white/15 pl-4">
+                        <div className="text-[11px] uppercase tracking-wider text-[#FFD700] font-bold border-b border-white/15 pb-1">
+                          Wholesale (B2B)
+                        </div>
+                        <div className="space-y-1 text-[11px] text-white/80">
+                          {allWholesaleTypes.map(wt => (
+                            <button
+                              key={wt.id}
+                              onClick={() => handleNav('shop', 'Wholesale', null, null, null, null, false, null, null, wt.name)}
+                              className="block w-full text-left py-0.5 hover:text-white hover:translate-x-0.5 transition-all cursor-pointer truncate"
+                              title={wt.name}
+                            >
+                              • {wt.name} Cartons
+                            </button>
+                          ))}
+                          <button
+                            onClick={() => handleNav('shop', 'Wholesale')}
+                            className="block w-full text-left pt-2 text-[#FFD700] font-bold hover:underline cursor-pointer text-[11px]"
+                          >
+                            Factory Bulk Export →
                           </button>
                         </div>
                       </div>
@@ -480,7 +564,7 @@ export default function Navbar() {
 
                 {openAccordions.category && (
                   <div className="mt-2.5 pl-3 space-y-2 border-l border-white/30 animate-fade-in">
-                    {ABAYA_STYLES.map((style) => (
+                    {allStyles.map((style) => (
                       <button
                         key={style.id}
                         onClick={() => handleNav('shop', 'Abaya', null, null, style.name)}
@@ -515,7 +599,7 @@ export default function Navbar() {
 
                 {openAccordions.work && (
                   <div className="mt-2.5 pl-3 space-y-2 border-l border-white/30 animate-fade-in">
-                    {ABAYA_WORKS.map((work) => (
+                    {allWorks.map((work) => (
                       <button
                         key={work.id}
                         onClick={() => handleNav('shop', 'Abaya', null, null, null, work.name)}
@@ -534,45 +618,17 @@ export default function Navbar() {
                 )}
               </div>
 
-              {/* SHAILA / SHAWL */}
-              <div className="pt-4">
-                <button
-                  onClick={() => handleNav('shop', 'Shaila/Shawl')}
-                  className="w-full flex items-center justify-between text-left text-xs uppercase tracking-wider font-semibold text-white py-1 hover:text-white/80 transition-colors cursor-pointer"
-                >
-                  <span>Shaila / Shawl</span>
-                </button>
-              </div>
-
-              {/* HIJAAB */}
-              <div className="pt-4">
-                <button
-                  onClick={() => handleNav('shop', 'Hijab')}
-                  className="w-full flex items-center justify-between text-left text-xs uppercase tracking-wider font-semibold text-white py-1 hover:text-white/80 transition-colors cursor-pointer"
-                >
-                  <span>Hijaab (Niqab, Cap, Glove, etc.)</span>
-                </button>
-              </div>
-
-              {/* INNER & PRAYER DRESS */}
-              <div className="pt-4">
-                <button
-                  onClick={() => handleNav('shop', 'Inner & Prayer dress')}
-                  className="w-full flex items-center justify-between text-left text-xs uppercase tracking-wider font-semibold text-white py-1 hover:text-white/80 transition-colors cursor-pointer"
-                >
-                  <span>Inner & Prayer Dress</span>
-                </button>
-              </div>
-
-              {/* KIDS ABAYA */}
-              <div className="pt-4">
-                <button
-                  onClick={() => handleNav('shop', 'Kids abaya')}
-                  className="w-full flex items-center justify-between text-left text-xs uppercase tracking-wider font-semibold text-white py-1 hover:text-white/80 transition-colors cursor-pointer"
-                >
-                  <span>Kids Abaya</span>
-                </button>
-              </div>
+              {/* DYNAMIC & MAIN CATEGORIES */}
+              {dynamicCategories.map((cat) => (
+                <div key={cat.id} className="pt-4">
+                  <button
+                    onClick={() => handleNav('shop', cat.id)}
+                    className="w-full flex items-center justify-between text-left text-xs uppercase tracking-wider font-semibold text-white py-1 hover:text-white/80 transition-colors cursor-pointer"
+                  >
+                    <span>{cat.name}</span>
+                  </button>
+                </div>
+              ))}
 
               {/* Accordion: WHOLESALE */}
               <div className="pt-4">
@@ -590,7 +646,7 @@ export default function Navbar() {
 
                 {openAccordions.wholesale && (
                   <div className="mt-2.5 pl-3 space-y-2 border-l border-white/30 animate-fade-in">
-                    {WHOLESALE_TYPES.map((type) => (
+                    {allWholesaleTypes.map((type) => (
                       <button
                         key={type.id}
                         onClick={() => handleNav('shop', 'Wholesale', null, null, null, null, false, null, null, type.name)}
