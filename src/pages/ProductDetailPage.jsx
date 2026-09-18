@@ -264,6 +264,58 @@ export default function ProductDetailPage() {
     setActiveImageIdx((prev) => (prev - 1 + images.length) % images.length);
   };
 
+  // Touch swipe support for mobile product gallery & lightbox
+  const touchStartX = useRef(0);
+  const touchEndX = useRef(0);
+
+  const handleTouchStart = (e) => {
+    if (!e.touches || !e.touches[0]) return;
+    touchStartX.current = e.touches[0].clientX;
+    touchEndX.current = e.touches[0].clientX;
+  };
+
+  const handleTouchMove = (e) => {
+    if (!e.touches || !e.touches[0]) return;
+    touchEndX.current = e.touches[0].clientX;
+  };
+
+  const handleTouchEnd = () => {
+    const diff = touchStartX.current - touchEndX.current;
+    if (Math.abs(diff) > 40) {
+      if (diff > 0) {
+        nextImage();
+      } else {
+        prevImage();
+      }
+    }
+    touchStartX.current = 0;
+    touchEndX.current = 0;
+  };
+
+  // Lock body scroll and enable keyboard arrows/Escape when lightbox is open
+  useEffect(() => {
+    if (!showLightboxModal) return;
+
+    const originalOverflow = document.body.style.overflow;
+    document.body.style.overflow = 'hidden';
+
+    const handleKeyDown = (e) => {
+      if (e.key === 'Escape') {
+        setShowLightboxModal(false);
+      } else if (e.key === 'ArrowRight') {
+        nextImage();
+      } else if (e.key === 'ArrowLeft') {
+        prevImage();
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+    return () => {
+      document.body.style.overflow = originalOverflow;
+      window.removeEventListener('keydown', handleKeyDown);
+    };
+  }, [showLightboxModal, images.length]);
+
   const toggleAccordion = (key) => {
     setOpenAccordions((prev) => ({ ...prev, [key]: !prev[key] }));
   };
@@ -391,12 +443,22 @@ export default function ProductDetailPage() {
         <div className="lg:col-span-6 space-y-4 lg:sticky lg:top-24">
           
           {/* Main Large Image Container */}
-          <div className="relative aspect-[3/4] bg-stone-100 overflow-hidden shadow-sm border border-stone-200 group">
+          <div
+            className="relative aspect-[3/4] bg-stone-100 overflow-hidden shadow-sm border border-stone-200 group touch-pan-y select-none"
+            onTouchStart={handleTouchStart}
+            onTouchMove={handleTouchMove}
+            onTouchEnd={handleTouchEnd}
+          >
             <img
               src={images[activeImageIdx] || images[0]}
               alt={product.name}
-              className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-[1.02] cursor-zoom-in"
-              onClick={() => setShowLightboxModal(true)}
+              className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-[1.02] cursor-default sm:cursor-zoom-in"
+              onClick={() => {
+                // Desktop click to open fullscreen zoom, keeping mobile tapping natural
+                if (typeof window !== 'undefined' && window.innerWidth >= 768) {
+                  setShowLightboxModal(true);
+                }
+              }}
             />
 
             {/* Badges Overlay */}
@@ -415,19 +477,19 @@ export default function ProductDetailPage() {
               </div>
             )}
 
-            {/* Top Right Quick Actions (Share & Lightbox Zoom & Wishlist) */}
+            {/* Top Right Quick Actions (Share & Lightbox Zoom) */}
             <div className="absolute top-3 right-3 flex items-center gap-1.5 z-10">
               <button
                 onClick={() => setShowLightboxModal(true)}
-                className="w-8 h-8 rounded-full bg-white text-[#7A0648] flex items-center justify-center transition-all hover:bg-stone-50 shadow-sm cursor-pointer border border-stone-200"
-                title="Zoom picture"
-                aria-label="Zoom image"
+                className="w-8 h-8 rounded-full bg-white/90 backdrop-blur-xs text-[#7A0648] flex items-center justify-center transition-all hover:bg-white shadow-sm cursor-pointer border border-stone-200"
+                title="Full Screen View"
+                aria-label="Full Screen View"
               >
                 <Maximize2 className="w-3.5 h-3.5" strokeWidth={1.5} />
               </button>
               <button
                 onClick={handleShare}
-                className="w-8 h-8 rounded-full bg-white text-[#7A0648] flex items-center justify-center transition-all hover:bg-stone-50 shadow-sm cursor-pointer border border-stone-200"
+                className="w-8 h-8 rounded-full bg-white/90 backdrop-blur-xs text-[#7A0648] flex items-center justify-center transition-all hover:bg-white shadow-sm cursor-pointer border border-stone-200"
                 title="Share product"
                 aria-label="Share link"
               >
@@ -440,14 +502,14 @@ export default function ProductDetailPage() {
               <div className="sm:hidden absolute inset-y-0 inset-x-2 flex items-center justify-between pointer-events-none z-10">
                 <button
                   onClick={(e) => { e.stopPropagation(); prevImage(); }}
-                  className="w-8 h-8 rounded-none bg-black/60 text-white border border-white/30 flex items-center justify-center pointer-events-auto shadow-md"
+                  className="w-8 h-8 rounded-full bg-white/85 text-stone-800 backdrop-blur-xs border border-stone-200 flex items-center justify-center pointer-events-auto shadow-sm active:scale-95"
                   aria-label="Previous image"
                 >
                   <ChevronLeft className="w-4 h-4" strokeWidth={2} />
                 </button>
                 <button
                   onClick={(e) => { e.stopPropagation(); nextImage(); }}
-                  className="w-8 h-8 rounded-none bg-black/60 text-white border border-white/30 flex items-center justify-center pointer-events-auto shadow-md"
+                  className="w-8 h-8 rounded-full bg-white/85 text-stone-800 backdrop-blur-xs border border-stone-200 flex items-center justify-center pointer-events-auto shadow-sm active:scale-95"
                   aria-label="Next image"
                 >
                   <ChevronRight className="w-4 h-4" strokeWidth={2} />
@@ -457,13 +519,13 @@ export default function ProductDetailPage() {
 
             {/* Indicator Dots on Mobile */}
             {images.length > 1 && (
-              <div className="sm:hidden absolute bottom-3 inset-x-0 flex justify-center gap-1.5 z-10">
+              <div className="sm:hidden absolute bottom-3 inset-x-0 flex justify-center items-center gap-1.5 z-10">
                 {images.map((_, idx) => (
                   <button
                     key={idx}
                     onClick={() => setActiveImageIdx(idx)}
                     className={`h-1.5 rounded-full transition-all cursor-pointer ${
-                      activeImageIdx === idx ? 'w-5 bg-[#7A0648]' : 'w-1.5 bg-black/30'
+                      activeImageIdx === idx ? 'w-5 bg-[#7A0648]' : 'w-1.5 bg-black/25'
                     }`}
                     aria-label={`Go to slide ${idx + 1}`}
                   />
@@ -1076,44 +1138,94 @@ export default function ProductDetailPage() {
       {/* ========================================================================= */}
       {showLightboxModal && (
         <div
-          className="fixed inset-0 bg-black/90 backdrop-blur-md z-50 flex items-center justify-center p-4 cursor-zoom-out"
+          className="fixed inset-0 bg-stone-950/95 backdrop-blur-md z-[9999] flex flex-col justify-between p-3 sm:p-6 animate-fade-in select-none"
           onClick={() => setShowLightboxModal(false)}
+          onTouchStart={handleTouchStart}
+          onTouchMove={handleTouchMove}
+          onTouchEnd={handleTouchEnd}
         >
-          <button
-            onClick={() => setShowLightboxModal(false)}
-            className="absolute top-5 right-5 text-white bg-black/50 p-2 rounded-full hover:bg-black transition-colors cursor-pointer z-50"
-          >
-            <X className="w-6 h-6" />
-          </button>
-
+          {/* Header Bar: Title, Counter & Close Button */}
           <div
-            className="relative max-w-4xl max-h-[90vh] flex items-center justify-center"
+            className="flex items-center justify-between text-white pb-3 pt-1 border-b border-white/10"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="flex items-center gap-3">
+              <span className="text-xs sm:text-sm font-serif tracking-wider uppercase text-stone-200 font-semibold truncate max-w-[200px] sm:max-w-md">
+                {product.name}
+              </span>
+              {images.length > 1 && (
+                <span className="text-[11px] font-mono tracking-widest text-stone-400 bg-white/10 px-2 py-0.5 rounded-full">
+                  {activeImageIdx + 1} / {images.length}
+                </span>
+              )}
+            </div>
+
+            <button
+              onClick={() => setShowLightboxModal(false)}
+              className="p-2 rounded-full text-stone-300 hover:text-white hover:bg-white/10 transition-colors cursor-pointer"
+              aria-label="Close full view"
+            >
+              <X className="w-6 h-6" />
+            </button>
+          </div>
+
+          {/* Main Photo Area */}
+          <div
+            className="flex-1 min-h-0 flex items-center justify-center relative py-2 sm:py-4"
             onClick={(e) => e.stopPropagation()}
           >
             <img
               src={images[activeImageIdx] || images[0]}
-              alt=""
-              className="max-h-[85vh] w-auto object-contain shadow-2xl"
+              alt={product.name}
+              className="max-h-[68vh] sm:max-h-[78vh] w-auto max-w-full object-contain rounded-xs shadow-2xl transition-all duration-300"
             />
+
             {images.length > 1 && (
               <>
                 <button
                   onClick={prevImage}
-                  className="absolute left-2 top-1/2 -translate-y-1/2 w-10 h-10 bg-black/60 text-white flex items-center justify-center hover:bg-black transition-colors cursor-pointer"
+                  className="absolute left-1 sm:left-4 top-1/2 -translate-y-1/2 w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-black/60 hover:bg-black text-white flex items-center justify-center border border-white/20 transition-all cursor-pointer shadow-lg active:scale-95"
                   aria-label="Previous image"
                 >
-                  <ChevronLeft className="w-5 h-5" />
+                  <ChevronLeft className="w-5 h-5 sm:w-6 sm:h-6" />
                 </button>
                 <button
                   onClick={nextImage}
-                  className="absolute right-2 top-1/2 -translate-y-1/2 w-10 h-10 bg-black/60 text-white flex items-center justify-center hover:bg-black transition-colors cursor-pointer"
+                  className="absolute right-1 sm:right-4 top-1/2 -translate-y-1/2 w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-black/60 hover:bg-black text-white flex items-center justify-center border border-white/20 transition-all cursor-pointer shadow-lg active:scale-95"
                   aria-label="Next image"
                 >
-                  <ChevronRight className="w-5 h-5" />
+                  <ChevronRight className="w-5 h-5 sm:w-6 sm:h-6" />
                 </button>
               </>
             )}
           </div>
+
+          {/* Bottom Thumbnails Strip */}
+          {images.length > 1 && (
+            <div
+              className="pt-2 sm:pt-3 border-t border-white/10 flex items-center justify-center gap-2 overflow-x-auto pb-1"
+              onClick={(e) => e.stopPropagation()}
+            >
+              {images.map((imgUrl, idx) => (
+                <button
+                  key={idx}
+                  onClick={() => setActiveImageIdx(idx)}
+                  className={`relative w-12 h-16 sm:w-14 sm:h-20 rounded-xs overflow-hidden border-2 transition-all cursor-pointer flex-shrink-0 ${
+                    activeImageIdx === idx
+                      ? 'border-white scale-105 shadow-md'
+                      : 'border-transparent opacity-50 hover:opacity-100'
+                  }`}
+                  aria-label={`View photo ${idx + 1}`}
+                >
+                  <img
+                    src={imgUrl}
+                    alt=""
+                    className="w-full h-full object-cover"
+                  />
+                </button>
+              ))}
+            </div>
+          )}
         </div>
       )}
 
