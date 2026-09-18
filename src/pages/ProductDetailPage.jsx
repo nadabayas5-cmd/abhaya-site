@@ -22,6 +22,7 @@ import {
   Sparkle,
   Info,
   Maximize2,
+  Minimize2,
   ZoomIn,
   ZoomOut,
   X,
@@ -298,6 +299,7 @@ export default function ProductDetailPage() {
   // Lightbox Zoom & Pan states
   const [isZoomed, setIsZoomed] = useState(false);
   const [zoomOffset, setZoomOffset] = useState({ x: 0, y: 0 });
+  const [fillMode, setFillMode] = useState('fill'); // 'fill' (fills entire screen, 0 black bars) or 'fit' (contains full photo)
   const panStartRef = useRef({ x: 0, y: 0 });
   const isDraggingRef = useRef(false);
 
@@ -316,6 +318,11 @@ export default function ProductDetailPage() {
       }
       return true;
     });
+  };
+
+  const toggleFillMode = (e) => {
+    if (e) e.stopPropagation();
+    setFillMode((prev) => (prev === 'fill' ? 'fit' : 'fill'));
   };
 
   const handlePointerDown = (e) => {
@@ -1223,6 +1230,26 @@ export default function ProductDetailPage() {
             </div>
 
             <div className="flex items-center gap-2 pointer-events-auto">
+              {/* Fill Screen vs Fit Screen Toggle Button */}
+              <button
+                onClick={toggleFillMode}
+                className="p-2 sm:px-3 rounded-full bg-white/15 hover:bg-white/25 backdrop-blur-xs text-white transition-all cursor-pointer shadow-lg active:scale-95 flex items-center gap-1.5"
+                title={fillMode === 'fill' ? "Fit Whole Photo (Show full length)" : "Fill Screen (Edge-to-Edge)"}
+                aria-label={fillMode === 'fill' ? "Fit Whole Photo" : "Fill Screen"}
+              >
+                {fillMode === 'fill' ? (
+                  <>
+                    <Minimize2 className="w-4 h-4 text-amber-300" />
+                    <span className="text-[11px] font-semibold tracking-wider uppercase hidden sm:inline">Fit</span>
+                  </>
+                ) : (
+                  <>
+                    <Maximize2 className="w-4 h-4 text-amber-300" />
+                    <span className="text-[11px] font-semibold tracking-wider uppercase hidden sm:inline">Fill</span>
+                  </>
+                )}
+              </button>
+
               <button
                 onClick={toggleZoom}
                 className="p-2.5 rounded-full bg-white/15 hover:bg-white/25 backdrop-blur-xs text-white transition-all cursor-pointer shadow-lg active:scale-95"
@@ -1259,7 +1286,7 @@ export default function ProductDetailPage() {
               style={{
                 width: '100%',
                 height: '100%',
-                objectFit: 'contain',
+                objectFit: fillMode === 'fill' ? 'cover' : 'contain',
                 transform: isZoomed
                   ? `scale(2.4) translate(${zoomOffset.x / 2.4}px, ${zoomOffset.y / 2.4}px)`
                   : 'scale(1) translate(0px, 0px)'
@@ -1286,13 +1313,25 @@ export default function ProductDetailPage() {
               </>
             )}
 
-            {/* Floating Tap to Zoom Hint */}
+            {/* Floating Tap to Zoom & Mode Hint */}
             {!isZoomed && (
-              <div className="absolute bottom-6 sm:bottom-8 pointer-events-none z-20">
-                <span className="bg-black/70 backdrop-blur-md text-white/90 text-[11px] uppercase tracking-wider font-medium px-3.5 py-1.5 rounded-full border border-white/15 shadow-lg flex items-center gap-1.5">
-                  <ZoomIn className="w-3.5 h-3.5 text-amber-300" />
-                  Tap photo to zoom (2.4x)
-                </span>
+              <div className="absolute bottom-6 sm:bottom-8 pointer-events-auto z-20 flex items-center gap-2">
+                <button
+                  onClick={(e) => { e.stopPropagation(); toggleFillMode(e); }}
+                  className="bg-black/75 hover:bg-black/90 backdrop-blur-md text-white/90 text-[11px] uppercase tracking-wider font-medium px-3.5 py-1.5 rounded-full border border-white/20 shadow-lg flex items-center gap-1.5 cursor-pointer active:scale-95 transition-all"
+                >
+                  {fillMode === 'fill' ? (
+                    <>
+                      <Minimize2 className="w-3.5 h-3.5 text-amber-300" />
+                      Filled (Tap for Fit)
+                    </>
+                  ) : (
+                    <>
+                      <Maximize2 className="w-3.5 h-3.5 text-amber-300" />
+                      Fitted (Tap for Full Fill)
+                    </>
+                  )}
+                </button>
               </div>
             )}
           </div>
