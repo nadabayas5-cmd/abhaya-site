@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
+import { createPortal } from 'react-dom';
 import { useParams } from 'react-router-dom';
 import {
   Star,
@@ -1093,8 +1094,11 @@ export default function ProductDetailPage() {
       {/* ========================================================================= */}
       {/* 6. MODAL: SIZE CHART DIALOG                                               */}
       {/* ========================================================================= */}
-      {showSizeGuideModal && (
-        <div className="fixed inset-0 bg-black/70 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+      {showSizeGuideModal && typeof document !== 'undefined' && createPortal(
+        <div 
+          className="fixed inset-0 bg-black/70 backdrop-blur-sm z-[99999] flex items-center justify-center p-4"
+          style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, zIndex: 99999 }}
+        >
           <div className="bg-white border border-stone-200 text-[#1E141B] max-w-lg w-full p-6 space-y-4 relative shadow-2xl animate-scale-up max-h-[90vh] overflow-y-auto">
             <button
               onClick={() => setShowSizeGuideModal(false)}
@@ -1130,15 +1134,17 @@ export default function ProductDetailPage() {
               Close Size Guide
             </button>
           </div>
-        </div>
+        </div>,
+        document.body
       )}
 
       {/* ========================================================================= */}
       {/* 7. MODAL: LIGHTBOX FULL IMAGE ZOOM                                        */}
       {/* ========================================================================= */}
-      {showLightboxModal && (
+      {showLightboxModal && typeof document !== 'undefined' && createPortal(
         <div
-          className="fixed inset-0 bg-stone-950/95 backdrop-blur-md z-[9999] flex flex-col justify-between p-3 sm:p-6 animate-fade-in select-none"
+          className="fixed inset-0 bg-stone-950/95 backdrop-blur-md z-[99999] flex flex-col justify-between p-3 sm:p-6 select-none"
+          style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, zIndex: 99999 }}
           onClick={() => setShowLightboxModal(false)}
           onTouchStart={handleTouchStart}
           onTouchMove={handleTouchMove}
@@ -1146,7 +1152,7 @@ export default function ProductDetailPage() {
         >
           {/* Header Bar: Title, Counter & Close Button */}
           <div
-            className="flex items-center justify-between text-white pb-3 pt-1 border-b border-white/10"
+            className="flex items-center justify-between text-white pb-3 pt-1 border-b border-white/10 shrink-0"
             onClick={(e) => e.stopPropagation()}
           >
             <div className="flex items-center gap-3">
@@ -1171,7 +1177,7 @@ export default function ProductDetailPage() {
 
           {/* Main Photo Area */}
           <div
-            className="flex-1 min-h-0 flex items-center justify-center relative py-2 sm:py-4"
+            className="flex-1 min-h-0 flex items-center justify-center relative py-2 sm:py-4 overflow-hidden"
             onClick={(e) => e.stopPropagation()}
           >
             <img
@@ -1203,7 +1209,7 @@ export default function ProductDetailPage() {
           {/* Bottom Thumbnails Strip */}
           {images.length > 1 && (
             <div
-              className="pt-2 sm:pt-3 border-t border-white/10 flex items-center justify-center gap-2 overflow-x-auto pb-1"
+              className="pt-2 sm:pt-3 border-t border-white/10 flex items-center justify-center gap-2 overflow-x-auto pb-1 shrink-0"
               onClick={(e) => e.stopPropagation()}
             >
               {images.map((imgUrl, idx) => (
@@ -1226,7 +1232,8 @@ export default function ProductDetailPage() {
               ))}
             </div>
           )}
-        </div>
+        </div>,
+        document.body
       )}
 
     </div>
