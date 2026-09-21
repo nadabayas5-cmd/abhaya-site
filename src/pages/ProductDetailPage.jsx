@@ -179,6 +179,14 @@ export default function ProductDetailPage() {
   const [showSizeGuideModal, setShowSizeGuideModal] = useState(false);
   const [showLightboxModal, setShowLightboxModal] = useState(false);
   const [isAddedAnimation, setIsAddedAnimation] = useState(false);
+  const [copiedLink, setCopiedLink] = useState(false);
+  const copyTimeoutRef = useRef(null);
+
+  useEffect(() => {
+    return () => {
+      if (copyTimeoutRef.current) clearTimeout(copyTimeoutRef.current);
+    };
+  }, []);
   const buyBoxRef = useRef(null);
   const reviewsSectionRef = useRef(null);
 
@@ -429,10 +437,45 @@ export default function ProductDetailPage() {
     });
   };
 
-  const handleShare = () => {
-    if (navigator.clipboard) {
-      navigator.clipboard.writeText(window.location.href);
-      showToast('Product link copied to clipboard!');
+  const handleShare = async () => {
+    const shareUrl = window.location.href;
+    const shareData = {
+      title: product?.name ? `${product.name} | NOOR AL DHUHA` : 'Luxury Abaya | NOOR AL DHUHA',
+      text: product?.name ? `Discover ${product.name} at NOOR AL DHUHA Atelier` : 'Discover luxury modest couture at NOOR AL DHUHA',
+      url: shareUrl,
+    };
+
+    if (navigator.share) {
+      try {
+        await navigator.share(shareData);
+        return;
+      } catch (err) {
+        if (err.name === 'AbortError') return;
+      }
+    }
+
+    try {
+      if (navigator.clipboard && window.isSecureContext) {
+        await navigator.clipboard.writeText(shareUrl);
+      } else {
+        const textArea = document.createElement('textarea');
+        textArea.value = shareUrl;
+        textArea.style.position = 'fixed';
+        textArea.style.left = '-999999px';
+        textArea.style.top = '-999999px';
+        document.body.appendChild(textArea);
+        textArea.focus();
+        textArea.select();
+        document.execCommand('copy');
+        document.body.removeChild(textArea);
+      }
+      setCopiedLink(true);
+      if (copyTimeoutRef.current) clearTimeout(copyTimeoutRef.current);
+      copyTimeoutRef.current = setTimeout(() => {
+        setCopiedLink(false);
+      }, 2500);
+    } catch (err) {
+      console.error('Failed to copy product link:', err);
     }
   };
 
@@ -567,14 +610,32 @@ export default function ProductDetailPage() {
               >
                 <Maximize2 className="w-3.5 h-3.5" strokeWidth={1.5} />
               </button>
-              <button
-                onClick={handleShare}
-                className="w-8 h-8 rounded-full bg-white/90 backdrop-blur-xs text-[#7A0648] flex items-center justify-center transition-all hover:bg-white shadow-sm cursor-pointer border border-stone-200"
-                title="Share product"
-                aria-label="Share link"
-              >
-                <Share2 className="w-3.5 h-3.5" strokeWidth={1.5} />
-              </button>
+              <div className="relative">
+                <button
+                  onClick={handleShare}
+                  className={`h-8 rounded-full bg-white/90 backdrop-blur-xs flex items-center justify-center transition-all hover:bg-white shadow-sm cursor-pointer border ${
+                    copiedLink
+                      ? 'px-2.5 bg-white text-emerald-700 border-emerald-300 ring-1 ring-emerald-200'
+                      : 'w-8 text-[#7A0648] border-stone-200'
+                  }`}
+                  title={copiedLink ? "Product link copied!" : "Share product"}
+                  aria-label={copiedLink ? "Product link copied!" : "Share link"}
+                >
+                  {copiedLink ? (
+                    <span className="flex items-center gap-1">
+                      <Check className="w-3.5 h-3.5 text-emerald-600 animate-in zoom-in-75 duration-200" strokeWidth={2.2} />
+                      <span className="text-[10px] font-semibold tracking-wide uppercase">Copied</span>
+                    </span>
+                  ) : (
+                    <Share2 className="w-3.5 h-3.5" strokeWidth={1.5} />
+                  )}
+                </button>
+                {copiedLink && (
+                  <div className="absolute top-full right-0 mt-1.5 px-2 py-1 bg-stone-900/95 backdrop-blur-xs text-white text-[11px] font-medium rounded-md shadow-lg whitespace-nowrap z-30 pointer-events-none animate-in fade-in slide-in-from-top-1 duration-150">
+                    Link copied to clipboard!
+                  </div>
+                )}
+              </div>
             </div>
 
             {/* Mobile Carousel Arrow Controls */}
