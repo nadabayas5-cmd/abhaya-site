@@ -1,4 +1,5 @@
 import { supabase, isSupabaseConfigured } from './supabase';
+import { cache } from './cache';
 
 // ─────────────────────────────────────────────────────────────────────────────
 // DEFAULT CONTENT — used if Supabase/localStorage are empty so site never breaks
@@ -277,52 +278,57 @@ const LS_KEY = 'noor_cms_content';
 // ─────────────────────────────────────────────────────────────────────────────
 // Fetch all site content (Supabase → localStorage → defaults)
 // ─────────────────────────────────────────────────────────────────────────────
-export async function fetchAllSiteContent() {
-  console.log('[CMS DB] fetchAllSiteContent called. isSupabaseConfigured:', isSupabaseConfigured);
-  if (isSupabaseConfigured && supabase) {
-    try {
-      const { data, error } = await supabase
-        .from('site_content')
-        .select('key, content');
+export async function fetchAllSiteContent(options = {}) {
+  const { forceRefresh = false } = options;
 
-      if (error) {
-        console.error('[CMS DB ERROR] Failed to fetch site_content from Supabase:', error);
-      } else if (data && data.length > 0) {
-        console.log(`[CMS DB SUCCESS] Loaded ${data.length} CMS sections from Supabase table 'site_content':`, data);
-        const result = {};
-        for (const row of data) {
-          result[row.key] = row.content;
+  return await cache.getOrFetch('cms_site_content', async () => {
+    console.log('[CMS DB] fetchAllSiteContent called. isSupabaseConfigured:', isSupabaseConfigured);
+    if (isSupabaseConfigured && supabase) {
+      try {
+        const { data, error } = await supabase
+          .from('site_content')
+          .select('key, content');
+
+        if (error) {
+          console.error('[CMS DB ERROR] Failed to fetch site_content from Supabase:', error);
+        } else if (data && data.length > 0) {
+          console.log(`[CMS DB SUCCESS] Loaded ${data.length} CMS sections from Supabase table 'site_content':`, data);
+          const result = {};
+          for (const row of data) {
+            result[row.key] = row.content;
+          }
+          // Merge with defaults to guarantee all keys exist
+          const merged = mergeWithDefaults(result);
+          try { localStorage.setItem(LS_KEY, JSON.stringify(merged)); } catch (_) {}
+          return { data: merged, error: null };
+        } else {
+          console.warn('[CMS DB] site_content table is empty (0 rows).');
         }
-        // Merge with defaults to guarantee all keys exist
-        const merged = mergeWithDefaults(result);
-        try { localStorage.setItem(LS_KEY, JSON.stringify(merged)); } catch (_) {}
-        return merged;
-      } else {
-        console.warn('[CMS DB] site_content table is empty (0 rows).');
+      } catch (err) {
+        console.error('[CMS DB CATCH] Network or query error:', err);
       }
-    } catch (err) {
-      console.error('[CMS DB CATCH] Network or query error:', err);
     }
-  }
 
-  // Fallback: localStorage
-  try {
-    const saved = localStorage.getItem(LS_KEY);
-    if (saved) {
-      const parsed = JSON.parse(saved);
-      console.log('[CMS DB FALLBACK] Loaded CMS content from localStorage:', parsed);
-      return mergeWithDefaults(parsed);
-    }
-  } catch (_) {}
+    // Fallback: localStorage
+    try {
+      const saved = localStorage.getItem(LS_KEY);
+      if (saved) {
+        const parsed = JSON.parse(saved);
+        console.log('[CMS DB FALLBACK] Loaded CMS content from localStorage:', parsed);
+        return { data: mergeWithDefaults(parsed), error: null };
+      }
+    } catch (_) {}
 
-  console.log('[CMS DB FALLBACK] Loaded default static CMS content:', DEFAULT_CONTENT);
-  return { ...DEFAULT_CONTENT };
+    console.log('[CMS DB FALLBACK] Loaded default static CMS content:', DEFAULT_CONTENT);
+    return { data: { ...DEFAULT_CONTENT }, error: null };
+  }, { ttlMs: 10 * 60 * 1000, persist: true, forceRefresh }).then(res => res?.data || { ...DEFAULT_CONTENT });
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Save a single content key to Supabase (upsert)
 // ─────────────────────────────────────────────────────────────────────────────
 export async function upsertSiteContent(key, content) {
+  cache.invalidate('cms_site_content');
   console.log('[CMS DB] upsertSiteContent called for section key:', key, 'content:', content);
   const section = CMS_SECTIONS.find(s => s.key === key)?.section || 'global';
   const label = CMS_SECTIONS.find(s => s.key === key)?.label || key;

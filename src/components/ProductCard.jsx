@@ -68,7 +68,7 @@ export default function ProductCard({ product }) {
 
   return (
     <div
-      className="group flex flex-col bg-transparent text-center transition-all duration-300 relative select-none"
+      className="group flex flex-col bg-transparent text-center transition-all duration-300 relative select-none product-card-defer"
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
     >
@@ -85,6 +85,7 @@ export default function ProductCard({ product }) {
             isHovered && secondaryImage !== primaryImage ? 'opacity-0' : 'opacity-100'
           }`}
           loading="lazy"
+          decoding="async"
         />
 
         {/* Secondary Hover Image */}
@@ -96,6 +97,7 @@ export default function ProductCard({ product }) {
               isHovered ? 'opacity-100 scale-105' : 'opacity-0'
             }`}
             loading="lazy"
+            decoding="async"
           />
         )}
 

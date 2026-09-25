@@ -22,6 +22,7 @@ import {
   WHOLESALE_TYPES
 } from '../data/products';
 import { openWhatsApp, formatSingleProductWhatsAppMessage } from '../utils/whatsapp';
+import Pagination from '../components/Pagination';
 
 export default function ShopPage() {
   const {
@@ -64,6 +65,10 @@ export default function ShopPage() {
   const [selectedBadge, setSelectedBadge] = useState('All');
   const [maxPrice, setMaxPrice] = useState(maxPriceLimit);
   const [sortBy, setSortBy] = useState('featured');
+  // Pagination State
+  const [currentPage, setCurrentPage] = useState(1);
+  const [pageSize, setPageSize] = useState(12);
+
   // UI state
   const [isSortOpen, setIsSortOpen] = useState(false);
   const [mobileFilterOpen, setMobileFilterOpen] = useState(false);
@@ -71,6 +76,23 @@ export default function ShopPage() {
   const [activeDrawerTab, setActiveDrawerTab] = useState('category'); // 'category' | 'style' | 'work' | 'wholesale' | 'shade'
 
   const sortDropdownRef = useRef(null);
+  const catalogTopRef = useRef(null);
+
+  // Reset to page 1 whenever filters change
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [
+    selectedCategory,
+    selectedStyleFilter,
+    selectedWorkFilter,
+    selectedWholesaleType,
+    selectedSubcategory,
+    selectedShade,
+    selectedBadge,
+    maxPrice,
+    searchQuery,
+    sortBy
+  ]);
 
   // Sync maxPrice when catalog changes
   useEffect(() => {
@@ -373,6 +395,12 @@ export default function ShopPage() {
     sortBy
   ]);
 
+  // Paginated slice for current page
+  const paginatedProducts = useMemo(() => {
+    const start = (currentPage - 1) * pageSize;
+    return filteredProducts.slice(start, start + pageSize);
+  }, [filteredProducts, currentPage, pageSize]);
+
   const handleCategoryChange = (catId) => {
     if (catId === 'Limited Edition') {
       setSelectedCategory('All');
@@ -448,7 +476,7 @@ export default function ShopPage() {
     (maxPrice < maxPriceLimit ? 1 : 0);
 
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12 space-y-6 sm:space-y-8 font-sans">
+    <div ref={catalogTopRef} className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12 space-y-6 sm:space-y-8 font-sans">
       
       {/* 1. Header Bar: Title, Count, and Search */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-stone-200 pb-5">
@@ -821,12 +849,35 @@ export default function ShopPage() {
 
       {/* 6. Products Grid Showcase */}
       {filteredProducts.length > 0 ? (
-        <div className={`grid gap-4 sm:gap-6 lg:gap-8 ${
-          mobileGridCols === 1 ? 'grid-cols-1' : 'grid-cols-2'
-        } sm:grid-cols-3 lg:grid-cols-4`}>
-          {filteredProducts.map((product) => (
-            <ProductCard key={product.id} product={product} />
-          ))}
+        <div className="space-y-6">
+          <div className={`grid gap-4 sm:gap-6 lg:gap-8 ${
+            mobileGridCols === 1 ? 'grid-cols-1' : 'grid-cols-2'
+          } sm:grid-cols-3 lg:grid-cols-4`}>
+            {paginatedProducts.map((product) => (
+              <ProductCard key={product.id} product={product} />
+            ))}
+          </div>
+
+          {/* Luxury Pagination Navigation */}
+          <Pagination
+            currentPage={currentPage}
+            totalItems={filteredProducts.length}
+            pageSize={pageSize}
+            onPageChange={(newPage) => {
+              setCurrentPage(newPage);
+              if (catalogTopRef.current) {
+                catalogTopRef.current.scrollIntoView({ behavior: 'smooth', block: 'start' });
+              } else {
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+              }
+            }}
+            onPageSizeChange={(newSize) => {
+              setPageSize(newSize);
+              setCurrentPage(1);
+            }}
+            pageSizeOptions={[12, 16, 24, 36]}
+            itemLabel="creations"
+          />
         </div>
       ) : (
         <div className="text-center py-20 bg-stone-50 border border-stone-200 p-8 space-y-4">

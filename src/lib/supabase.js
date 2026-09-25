@@ -1,5 +1,6 @@
 import { createClient } from '@supabase/supabase-js';
 import { PRODUCTS as DEFAULT_PRODUCTS } from '../data/products.js';
+import { cache } from './cache.js';
 
 const DEFAULT_SUPABASE_URL = 'https://gbqusurpixzwhqrpnity.supabase.co';
 const DEFAULT_SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImdicXVzdXJwaXh6d2hxcnBuaXR5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODc2Njk2MTQsImV4cCI6MjEwMzI0NTYxNH0.8-wjpH4d4I4L48dlTcPkCBtAq-sao74U_wpYcRpkEco';
@@ -113,81 +114,85 @@ export function formatProductForDB(product) {
 }
 
 /**
- * Fetch all products from Supabase (or fallback to local cache/defaults)
+ * Fetch all products from Supabase (with smart caching & stale-while-revalidate)
  */
-export async function fetchProductsFromSupabase() {
-  const timestamp = new Date().toISOString();
-  console.group(`[Supabase DB] 🔍 fetchProductsFromSupabase @ ${timestamp}`);
-  console.log('[Supabase DB] Config status:', { isSupabaseConfigured, hasClient: Boolean(supabase) });
+export async function fetchProductsFromSupabase(options = {}) {
+  const { forceRefresh = false } = options;
 
-  if (isSupabaseConfigured && supabase) {
-    try {
-      console.log('[Supabase DB] Executing query: supabase.from("products").select("*").order("created_at", { ascending: false })...');
-      const { data, error, status, statusText } = await supabase
-        .from('products')
-        .select('*')
-        .order('created_at', { ascending: false });
+  return await cache.getOrFetch('products_catalog', async () => {
+    const timestamp = new Date().toISOString();
+    console.group(`[Supabase DB] 🔍 fetchProductsFromSupabase @ ${timestamp}`);
+    console.log('[Supabase DB] Config status:', { isSupabaseConfigured, hasClient: Boolean(supabase) });
 
-      console.log(`[Supabase DB] Query response status: ${status} ${statusText || ''}`);
+    if (isSupabaseConfigured && supabase) {
+      try {
+        console.log('[Supabase DB] Executing query: supabase.from("products").select("*").order("created_at", { ascending: false })...');
+        const { data, error, status, statusText } = await supabase
+          .from('products')
+          .select('*')
+          .order('created_at', { ascending: false });
 
-      if (error) {
-        console.error('[Supabase DB ERROR] Query failed:', {
-          code: error.code,
-          message: error.message,
-          details: error.details,
-          hint: error.hint
-        });
-      } else if (Array.isArray(data)) {
-        console.log(`[Supabase DB SUCCESS] Fetched ${data.length} rows from 'products' table:`, data);
-        const formatted = data.map(formatProductFromDB);
-        console.log(`[Supabase DB] Formatted ${formatted.length} UI product objects:`, formatted);
+        console.log(`[Supabase DB] Query response status: ${status} ${statusText || ''}`);
 
-        // Cache to localStorage for fast initial reloads
-        try {
-          localStorage.setItem(LOCAL_STORAGE_PRODUCTS_KEY, JSON.stringify(formatted));
-          console.log('[Supabase DB] Updated local cache with', formatted.length, 'products');
-        } catch (storageErr) {
-          console.warn('[Supabase DB] Failed to write to localStorage cache:', storageErr);
-        }
-        console.groupEnd();
-        return { data: formatted, source: 'supabase', error: null };
-      }
-    } catch (err) {
-      console.error('[Supabase DB CATCH] Uncaught exception during fetch:', err);
-    }
-  }
+        if (error) {
+          console.error('[Supabase DB ERROR] Query failed:', {
+            code: error.code,
+            message: error.message,
+            details: error.details,
+            hint: error.hint
+          });
+        } else if (Array.isArray(data)) {
+          console.log(`[Supabase DB SUCCESS] Fetched ${data.length} rows from 'products' table:`, data);
+          const formatted = data.map(formatProductFromDB);
+          console.log(`[Supabase DB] Formatted ${formatted.length} UI product objects:`, formatted);
 
-  // Fallback to local storage or bundled curated items ONLY when Supabase is not configured
-  if (!isSupabaseConfigured) {
-    console.warn('[Supabase DB] Supabase is NOT configured. Checking localStorage fallback...');
-    try {
-      const saved = localStorage.getItem(LOCAL_STORAGE_PRODUCTS_KEY);
-      if (saved) {
-        const parsed = JSON.parse(saved);
-        if (Array.isArray(parsed) && parsed.length > 0) {
-          console.log(`[Supabase DB FALLBACK] Loaded ${parsed.length} products from localStorage cache:`, parsed);
+          // Cache to localStorage for fast initial reloads
+          try {
+            localStorage.setItem(LOCAL_STORAGE_PRODUCTS_KEY, JSON.stringify(formatted));
+          } catch (storageErr) {
+            console.warn('[Supabase DB] Failed to write to localStorage cache:', storageErr);
+          }
           console.groupEnd();
-          return { data: parsed, source: 'localStorage', error: null };
+          return { data: formatted, source: 'supabase', error: null };
         }
+      } catch (err) {
+        console.error('[Supabase DB CATCH] Uncaught exception during fetch:', err);
       }
-    } catch (storageErr) {
-      console.warn('[Supabase DB] Error reading local cache:', storageErr);
     }
 
-    console.log('[Supabase DB FALLBACK] Using DEFAULT_PRODUCTS (17 demo items):', DEFAULT_PRODUCTS);
-    console.groupEnd();
-    return { data: DEFAULT_PRODUCTS, source: 'default', error: null };
-  }
+    // Fallback to local storage or bundled curated items ONLY when Supabase is not configured
+    if (!isSupabaseConfigured) {
+      console.warn('[Supabase DB] Supabase is NOT configured. Checking localStorage fallback...');
+      try {
+        const saved = localStorage.getItem(LOCAL_STORAGE_PRODUCTS_KEY);
+        if (saved) {
+          const parsed = JSON.parse(saved);
+          if (Array.isArray(parsed) && parsed.length > 0) {
+            console.log(`[Supabase DB FALLBACK] Loaded ${parsed.length} products from localStorage cache:`, parsed);
+            console.groupEnd();
+            return { data: parsed, source: 'localStorage', error: null };
+          }
+        }
+      } catch (storageErr) {
+        console.warn('[Supabase DB] Error reading local cache:', storageErr);
+      }
 
-  console.warn('[Supabase DB] Returning empty array due to fetch failure.');
-  console.groupEnd();
-  return { data: [], source: 'supabase', error: 'Failed to fetch from Supabase' };
+      console.log('[Supabase DB FALLBACK] Using DEFAULT_PRODUCTS (17 demo items):', DEFAULT_PRODUCTS);
+      console.groupEnd();
+      return { data: DEFAULT_PRODUCTS, source: 'default', error: null };
+    }
+
+    console.warn('[Supabase DB] Returning empty array due to fetch failure.');
+    console.groupEnd();
+    return { data: [], source: 'supabase', error: 'Failed to fetch from Supabase' };
+  }, { ttlMs: 5 * 60 * 1000, persist: true, forceRefresh });
 }
 
 /**
  * Insert or Update a product in Supabase with auto-retry for missing schema columns
  */
 export async function upsertProductToSupabase(product) {
+  cache.invalidate('products_catalog');
   const timestamp = new Date().toISOString();
   console.group(`[Supabase DB] 💾 upsertProductToSupabase @ ${timestamp}`);
   console.log('[Supabase DB] Product input:', { id: product?.id, name: product?.name, category: product?.category, image: product?.image });
@@ -258,6 +263,7 @@ export async function upsertProductToSupabase(product) {
  * Delete a product from Supabase
  */
 export async function deleteProductFromSupabase(productId) {
+  cache.invalidate('products_catalog');
   const timestamp = new Date().toISOString();
   console.group(`[Supabase DB] 🗑️ deleteProductFromSupabase @ ${timestamp}`);
   console.log('[Supabase DB] Deleting product ID:', productId);
@@ -365,6 +371,7 @@ export async function uploadProductImage(file, subFolder = 'general') {
  * Seed initial catalog to Supabase
  */
 export async function seedInitialProductsToSupabase() {
+  cache.invalidate('products_catalog');
   const productsToSeed = DEFAULT_PRODUCTS.map(formatProductForDB);
 
   if (isSupabaseConfigured && supabase) {

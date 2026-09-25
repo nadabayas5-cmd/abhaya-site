@@ -14,6 +14,7 @@ import {
 } from 'lucide-react';
 import { useShop } from '../context/ShopContext';
 import ProductCard from '../components/ProductCard';
+import Pagination from '../components/Pagination';
 import {
   MAIN_CATEGORIES,
   ABAYA_STYLES,
@@ -71,6 +72,11 @@ export default function CollectionsPage() {
   const [isSortOpen, setIsSortOpen] = useState(false);
   const [sortBy, setSortBy] = useState('featured'); // 'featured' | 'price-low' | 'price-high' | 'latest' | 'alpha-az' | 'alpha-za'
   
+  // Pagination State
+  const [currentPage, setCurrentPage] = useState(1);
+  const [pageSize, setPageSize] = useState(12);
+  const catalogTopRef = useRef(null);
+
   // Selected Filters
   const [selectedCategories, setSelectedCategories] = useState([]);
   const [selectedStyles, setSelectedStyles] = useState([]);
@@ -80,6 +86,23 @@ export default function CollectionsPage() {
   const [selectedFabrics, setSelectedFabrics] = useState([]);
   const [selectedColors, setSelectedColors] = useState([]);
   const [selectedSizes, setSelectedSizes] = useState([]);
+
+  // Reset to page 1 on filter changes
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [
+    selectedCategories,
+    selectedStyles,
+    selectedWorks,
+    selectedWholesaleTypes,
+    selectedSubcategories,
+    selectedFabrics,
+    selectedColors,
+    selectedSizes,
+    priceRange,
+    sortBy,
+    searchQuery
+  ]);
 
   // Price calculations
   const maxPriceLimit = useMemo(() => {
@@ -544,8 +567,14 @@ export default function CollectionsPage() {
     getProductPrice
   ]);
 
+  // Paginated slice for current page
+  const paginatedProducts = useMemo(() => {
+    const start = (currentPage - 1) * pageSize;
+    return filteredProducts.slice(start, start + pageSize);
+  }, [filteredProducts, currentPage, pageSize]);
+
   return (
-    <div className="bg-[#FAF8F5] min-h-screen text-[#1E141B] pb-20 font-semibold">
+    <div ref={catalogTopRef} className="bg-[#FAF8F5] min-h-screen text-[#1E141B] pb-20 font-semibold">
       
       {/* 1. Header Banner */}
       <div className="pt-6 pb-4 sm:pt-8 sm:pb-5 px-4 max-w-7xl mx-auto text-center">
@@ -699,22 +728,45 @@ export default function CollectionsPage() {
       {/* 3. Main Products Grid */}
       <div className="max-w-7xl mx-auto px-4 sm:px-8 pt-8">
         {filteredProducts.length > 0 ? (
-          <div
-            className={`grid gap-x-3 gap-y-8 sm:gap-x-6 sm:gap-y-10 ${
-              // Mobile cols
-              mobileCols === 1 ? 'grid-cols-1' : 'grid-cols-2'
-            } ${
-              // Desktop cols
-              desktopCols === 2
-                ? 'sm:grid-cols-2'
-                : desktopCols === 4
-                ? 'sm:grid-cols-3 lg:grid-cols-4'
-                : 'sm:grid-cols-3'
-            }`}
-          >
-            {filteredProducts.map((product) => (
-              <ProductCard key={product.id} product={product} />
-            ))}
+          <div className="space-y-8">
+            <div
+              className={`grid gap-x-3 gap-y-8 sm:gap-x-6 sm:gap-y-10 ${
+                // Mobile cols
+                mobileCols === 1 ? 'grid-cols-1' : 'grid-cols-2'
+              } ${
+                // Desktop cols
+                desktopCols === 2
+                  ? 'sm:grid-cols-2'
+                  : desktopCols === 4
+                  ? 'sm:grid-cols-3 lg:grid-cols-4'
+                  : 'sm:grid-cols-3'
+              }`}
+            >
+              {paginatedProducts.map((product) => (
+                <ProductCard key={product.id} product={product} />
+              ))}
+            </div>
+
+            {/* Luxury Pagination Navigation */}
+            <Pagination
+              currentPage={currentPage}
+              totalItems={filteredProducts.length}
+              pageSize={pageSize}
+              onPageChange={(newPage) => {
+                setCurrentPage(newPage);
+                if (catalogTopRef.current) {
+                  catalogTopRef.current.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                } else {
+                  window.scrollTo({ top: 0, behavior: 'smooth' });
+                }
+              }}
+              onPageSizeChange={(newSize) => {
+                setPageSize(newSize);
+                setCurrentPage(1);
+              }}
+              pageSizeOptions={[12, 16, 24, 36]}
+              itemLabel="creations"
+            />
           </div>
         ) : (
           /* Empty State */

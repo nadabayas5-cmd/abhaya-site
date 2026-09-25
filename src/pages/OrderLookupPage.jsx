@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Package, Search, Truck, CheckCircle2, Clock, MapPin, ShieldCheck, ArrowRight, MessageSquare, AlertCircle } from 'lucide-react';
 import { useShop } from '../context/ShopContext';
 import { WHATSAPP_PHONE } from '../utils/whatsapp';
+import { rateLimiter } from '../lib/rateLimit';
 
 export default function OrderLookupPage() {
   const { navigateTo, formatPrice, showToast } = useShop();
@@ -82,6 +83,13 @@ export default function OrderLookupPage() {
       showToast('Please enter your Order ID (e.g. #ABH-88421)', 'error');
       return;
     }
+
+    const check = rateLimiter.check('order_lookup', { maxRequests: 5, windowMs: 60000 });
+    if (!check.allowed) {
+      showToast(`Rate limit reached. Please wait ${check.retryAfterSec}s before checking another order.`, 'error');
+      return;
+    }
+
     setLoading(true);
     setTimeout(() => {
       setLoading(false);

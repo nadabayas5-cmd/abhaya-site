@@ -33,6 +33,8 @@ import { isSupabaseConfigured } from '../lib/supabase';
 import { CMS_SECTIONS } from '../lib/cms';
 import { MAIN_CATEGORIES, ABAYA_STYLES, ABAYA_WORKS } from '../data/products';
 import AdminProductEditor from '../components/admin/AdminProductEditor';
+import Pagination from '../components/Pagination';
+import { rateLimiter } from '../lib/rateLimit';
 import brandLogo from '../assets/logo.png';
 
 export default function AdminPage() {
@@ -84,18 +86,34 @@ export default function AdminPage() {
   const [selectedMarketFilter, setSelectedMarketFilter] = useState('all'); // 'all' | 'india' | 'arab'
   const [stockFilter, setStockFilter] = useState('all'); // 'all' | 'low' | 'out'
 
+  // Pagination State for Admin Products Table/Cards
+  const [currentPage, setCurrentPage] = useState(1);
+  const [pageSize, setPageSize] = useState(10);
+
   // Full-page Editor State
   const [isProductEditorOpen, setIsProductEditorOpen] = useState(false);
   const [editingProduct, setEditingProduct] = useState(null);
   const [deleteConfirmId, setDeleteConfirmId] = useState(null);
 
-  // Handle PIN Login
+  // Reset page when filters change
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [searchQuery, selectedCategory, selectedStyle, selectedWork, selectedMarketFilter, stockFilter]);
+
+  // Handle PIN Login with Rate Limiting (Prevent Brute-Force)
   const handlePinSubmit = (e) => {
     e.preventDefault();
+    const limitCheck = rateLimiter.check('admin_pin', { maxRequests: 5, windowMs: 60000 });
+    if (!limitCheck.allowed) {
+      setLoginError(`Too many incorrect attempts. Please wait ${limitCheck.retryAfterSec} seconds.`);
+      return;
+    }
+
     const success = loginAdmin(pinInput);
     if (!success) {
-      setLoginError('Incorrect administrative PIN. (Default: 1234)');
+      setLoginError(`Incorrect administrative PIN. (${limitCheck.remainingAttempts} attempts remaining)`);
     } else {
+      rateLimiter.reset('admin_pin');
       setLoginError('');
       setPinInput('');
     }
@@ -181,6 +199,12 @@ export default function AdminPage() {
       return matchesSearch && matchesCategory && matchesStyle && matchesWork && matchesMarket && matchesStock;
     });
   }, [baseProducts, searchQuery, selectedCategory, selectedStyle, selectedWork, selectedMarketFilter, stockFilter]);
+
+  // Paginated slice for current page
+  const paginatedProducts = useMemo(() => {
+    const start = (currentPage - 1) * pageSize;
+    return filteredProducts.slice(start, start + pageSize);
+  }, [filteredProducts, currentPage, pageSize]);
 
   // Handlers
   const handleOpenAddModal = () => {
@@ -573,7 +597,7 @@ export default function AdminPage() {
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-surface-container-highest">
-                    {filteredProducts.map((p) => (
+                    {paginatedProducts.map((p) => (
                       <tr key={p.id} className="hover:bg-[#fff7fc]/60 transition-colors">
                         
                         {/* Thumbnail & Title */}
@@ -734,7 +758,7 @@ export default function AdminPage() {
           ) : (
             /* Cards View */
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-              {filteredProducts.map((p) => (
+              {paginatedProducts.map((p) => (
                 <div
                   key={p.id}
                   className="bg-white rounded-2xl overflow-hidden border border-secondary/20 shadow-subtle hover:shadow-luxury transition-all flex flex-col"
@@ -818,6 +842,27 @@ export default function AdminPage() {
                   </div>
                 </div>
               ))}
+            </div>
+          )}
+
+          {/* Admin Table/Cards Pagination */}
+          {filteredProducts.length > 0 && (
+            <div className="bg-white rounded-2xl p-4 border border-secondary/20 shadow-xs">
+              <Pagination
+                currentPage={currentPage}
+                totalItems={filteredProducts.length}
+                pageSize={pageSize}
+                onPageChange={(p) => {
+                  setCurrentPage(p);
+                  window.scrollTo({ top: 350, behavior: 'smooth' });
+                }}
+                onPageSizeChange={(s) => {
+                  setPageSize(s);
+                  setCurrentPage(1);
+                }}
+                pageSizeOptions={[10, 25, 50, 100]}
+                itemLabel="inventory products"
+              />
             </div>
           )}
 

@@ -114,6 +114,12 @@
   padding-bottom: max(0.5rem, env(safe-area-inset-bottom, 0px));
 }
 
+/* Off-screen rendering deferral for high-performance grids */
+.product-card-defer {
+  content-visibility: auto;
+  contain-intrinsic-size: auto 380px;
+}
+
 .pt-safe {
   padding-top: max(0.5rem, env(safe-area-inset-top, 0px));
 }
