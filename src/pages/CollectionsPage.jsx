@@ -87,6 +87,20 @@ export default function CollectionsPage() {
   const [selectedColors, setSelectedColors] = useState([]);
   const [selectedSizes, setSelectedSizes] = useState([]);
 
+  // Price calculations
+  const maxPriceLimit = useMemo(() => {
+    return Math.max(...PRODUCTS.map(p => getProductPrice(p) || 0), 300);
+  }, [PRODUCTS, getProductPrice]);
+
+  const minPriceLimit = 0;
+
+  const [priceRange, setPriceRange] = useState(maxPriceLimit);
+
+  // Sync priceRange when catalog updates with higher prices
+  useEffect(() => {
+    setPriceRange(prev => Math.max(prev, maxPriceLimit));
+  }, [maxPriceLimit]);
+
   // Reset to page 1 on filter changes
   useEffect(() => {
     setCurrentPage(1);
@@ -103,20 +117,6 @@ export default function CollectionsPage() {
     sortBy,
     searchQuery
   ]);
-
-  // Price calculations
-  const maxPriceLimit = useMemo(() => {
-    return Math.max(...PRODUCTS.map(p => getProductPrice(p) || 0), 300);
-  }, [PRODUCTS, getProductPrice]);
-
-  const minPriceLimit = 0;
-
-  const [priceRange, setPriceRange] = useState(maxPriceLimit);
-
-  // Sync priceRange when catalog updates with higher prices
-  useEffect(() => {
-    setPriceRange(prev => Math.max(prev, maxPriceLimit));
-  }, [maxPriceLimit]);
 
   // Dynamic filter collections extracted from active catalog
   const dynamicCategories = useMemo(() => {
