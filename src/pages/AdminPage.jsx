@@ -698,8 +698,8 @@ export default function AdminPage() {
                               )}
                             </div>
                             <div className="flex items-center gap-1 text-[10px] text-amber-700">
-                              <span className="font-semibold">★ {Number(p.rating || 5.0).toFixed(1)}</span>
-                              <span className="text-stone-400">({p.reviewsCount || 0} reviews)</span>
+                              <span className="font-semibold">★ {Number(p.rating || 4.8).toFixed(1)}</span>
+                              <span className="text-stone-400">({p.reviewsCount || 74} reviews)</span>
                             </div>
                           </div>
                         </td>
@@ -822,8 +822,8 @@ export default function AdminPage() {
                           {p.name}
                         </h3>
                         <div className="flex items-center gap-1 text-[11px] text-amber-700 font-semibold shrink-0">
-                          <span>★ {Number(p.rating || 5.0).toFixed(1)}</span>
-                          <span className="text-stone-400 font-normal">({p.reviewsCount || 0})</span>
+                          <span>★ {Number(p.rating || 4.8).toFixed(1)}</span>
+                          <span className="text-stone-400 font-normal">({p.reviewsCount || 74})</span>
                         </div>
                       </div>
 

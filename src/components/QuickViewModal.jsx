@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { X, Star, ShoppingBag, Sparkles, Check, ArrowRight, Scissors } from 'lucide-react';
 import { useShop } from '../context/ShopContext';
+import StarRating from './StarRating';
 import { ABAYA_STYLES, ABAYA_WORKS, ABAYA_SIZE_LABELS, DEFAULT_ABAYA_SIZE } from '../data/products';
 
 function QuickViewModalContent({ product, onClose }) {
@@ -132,10 +133,16 @@ function QuickViewModalContent({ product, onClose }) {
                   <span className="text-[10px] sm:text-[11px] uppercase tracking-[0.14em] font-bold text-stone-500">
                     {product.category || 'Abaya'} {product.subcategory ? `• ${product.subcategory}` : product.wholesaleType ? `• ${product.wholesaleType}` : isAbayaCategory && selectedStyle ? `• ${selectedStyle}` : ''}
                   </span>
-                  <div className="flex items-center gap-1 text-[#FFD700] text-xs">
-                    <Star className="w-3.5 h-3.5 fill-[#FFD700] text-[#FFD700]" strokeWidth={1} />
-                    <span className="font-bold text-[#1E141B]">{product.rating}</span>
-                  </div>
+                  <StarRating
+                    rating={product.rating}
+                    reviewsCount={product.reviewsCount}
+                    size="sm"
+                    showScore={true}
+                    showCount={true}
+                    countFormat="full"
+                    scoreClass="text-xs font-bold text-stone-800"
+                    countClass="text-[11px] text-stone-500"
+                  />
                 </div>
 
                 <h2 className="text-base sm:text-xl font-bold uppercase tracking-wider text-[#1E141B] leading-tight">

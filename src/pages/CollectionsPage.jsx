@@ -360,6 +360,31 @@ export default function CollectionsPage() {
     }
   };
 
+  const toggleCategory = (catName) => {
+    const isWholesale = catName.toLowerCase() === 'wholesale';
+    setSelectedCategories(prev => {
+      if (isWholesale) {
+        // Toggling Wholesale on: clear retail categories
+        const alreadyActive = prev.some(c => c.toLowerCase() === 'wholesale');
+        if (alreadyActive) {
+          setSelectedWholesaleTypes([]);
+          return [];
+        } else {
+          return [catName];
+        }
+      } else {
+        // Toggling retail category: remove Wholesale if present
+        const withoutWholesale = prev.filter(c => c.toLowerCase() !== 'wholesale');
+        setSelectedWholesaleTypes([]);
+        if (withoutWholesale.includes(catName)) {
+          return withoutWholesale.filter(c => c !== catName);
+        } else {
+          return [...withoutWholesale, catName];
+        }
+      }
+    });
+  };
+
   const clearAllFilters = () => {
     setSelectedCategories([]);
     setSelectedStyles([]);
@@ -408,15 +433,26 @@ export default function CollectionsPage() {
         }
       }
 
-      // 2. Category Filter
-      if (selectedCategories.length > 0) {
-        const matchesCat = selectedCategories.some(cat => {
-          if (!product.category) return false;
-          const catLower = cat.toLowerCase();
-          const pCatLower = product.category.toLowerCase();
-          return pCatLower === catLower || pCatLower.includes(catLower) || catLower.includes(pCatLower);
-        });
-        if (!matchesCat) return false;
+      // 2. Category Filter & Strict Retail vs Wholesale Separation
+      const isWholesaleProduct = (product.category || '').toLowerCase().includes('wholesale');
+      const isWholesaleCategorySelected = selectedCategories.some(c => c.toLowerCase() === 'wholesale');
+
+      if (isWholesaleCategorySelected) {
+        // Wholesale Mode: strictly only show Wholesale products
+        if (!isWholesaleProduct) return false;
+      } else {
+        // Retail Mode (default or retail categories selected): strictly NEVER show wholesale products
+        if (isWholesaleProduct) return false;
+
+        if (selectedCategories.length > 0) {
+          const matchesCat = selectedCategories.some(cat => {
+            if (!product.category) return false;
+            const catLower = cat.toLowerCase();
+            const pCatLower = product.category.toLowerCase();
+            return pCatLower === catLower || pCatLower.includes(catLower) || catLower.includes(pCatLower);
+          });
+          if (!matchesCat) return false;
+        }
       }
 
       // 3. Silhouette / Styles Filter (Abayas)
@@ -851,7 +887,7 @@ export default function CollectionsPage() {
                         <input
                           type="checkbox"
                           checked={isChecked}
-                          onChange={() => toggleItem(selectedCategories, setSelectedCategories, catName)}
+                          onChange={() => toggleCategory(catName)}
                           className="w-4 h-4 accent-[#7A0648] cursor-pointer"
                         />
                       </label>
@@ -861,8 +897,8 @@ export default function CollectionsPage() {
               )}
             </div>
 
-            {/* Wholesale Types Accordion (if Wholesale selected or no specific category) */}
-            {(selectedCategories.length === 0 || selectedCategories.some(c => c.toLowerCase() === 'wholesale')) && (
+            {/* Wholesale Types Accordion (Only shown when Wholesale is selected) */}
+            {selectedCategories.some(c => c.toLowerCase() === 'wholesale') && (
               <div className="p-6 bg-amber-50/40">
                 <button
                   onClick={() => toggleAccordion('wholesaleType')}

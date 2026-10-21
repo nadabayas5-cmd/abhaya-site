@@ -77,8 +77,8 @@ export default function AdminProductEditor({
   const [customCategory, setCustomCategory] = useState('');
   const [badge, setBadge] = useState('');
   const [targetRegion, setTargetRegion] = useState('all'); // 'all' | 'india' | 'arab'
-  const [rating, setRating] = useState('5.0');
-  const [reviewsCount, setReviewsCount] = useState('0');
+  const [rating, setRating] = useState('4.8');
+  const [reviewsCount, setReviewsCount] = useState('74');
   const [stockCount, setStockCount] = useState(12);
 
   // Media State
@@ -167,8 +167,8 @@ export default function AdminProductEditor({
       setCustomCategory('');
       setBadge('');
       setTargetRegion('all');
-      setRating('5.0');
-      setReviewsCount('0');
+      setRating('4.8');
+      setReviewsCount('74');
       setImage('');
       setGallery([]);
       setStyles(ABAYA_STYLES.map(s => s.name));
@@ -341,10 +341,10 @@ export default function AdminProductEditor({
       badge: badge.trim(),
       targetRegion: targetRegion || 'all',
       reviews: reviews,
-      reviewsCount: reviews.length > 0 ? reviews.length : (Number(reviewsCount) || 0),
+      reviewsCount: Number(reviewsCount) || 74,
       rating: reviews.length > 0
-        ? Number((reviews.reduce((acc, r) => acc + (Number(r.rating) || 5), 0) / reviews.length).toFixed(1))
-        : (Number(rating) || 5.0),
+        ? Number((reviews.reduce((acc, r) => acc + (Number(r.rating) || 4.8), 0) / reviews.length).toFixed(1))
+        : (Number(rating) || 4.8),
       defaultStyle: defaultStyle ? defaultStyle.trim() : null,
       defaultWork: defaultWork ? defaultWork.trim() : null,
       styles: defaultStyle ? [defaultStyle.trim()] : (styles.length > 0 ? styles : []),

@@ -36,6 +36,7 @@ import {
 } from 'lucide-react';
 import { useShop } from '../context/ShopContext';
 import ProductCard from '../components/ProductCard';
+import StarRating from '../components/StarRating';
 import { ABAYA_STYLES, ABAYA_WORKS, ABAYA_SIZES, DEFAULT_ABAYA_SIZE } from '../data/products';
 import { formatSingleProductWhatsAppMessage, openWhatsApp } from '../utils/whatsapp';
 
@@ -92,7 +93,7 @@ function ProductDetailsSummary({ product, excludeSubtitle = false }) {
     work && !textIncludes(work) ? ['Work', work] : null,
     color && !textIncludes(color) ? ['Color', color] : null,
     care && !textIncludes(care) ? ['Garment Care', care] : null,
-    wholesale && !textIncludes(wholesale) ? ['Wholesale Lot', wholesale] : null,
+    wholesale && !textIncludes(wholesale) ? ['Wholesale', wholesale] : null,
   ].filter(Boolean);
 
   const showStylingBlock = styling && !textIncludes(styling.slice(0, 24));
@@ -222,10 +223,10 @@ export default function ProductDetailPage() {
       id: 3,
       author: 'Mariam K.',
       location: 'Riyadh, KSA',
-      rating: 5,
+      rating: 4,
       date: 'Verified Buyer • 2 weeks ago',
-      title: 'Bespoke fit & fast delivery',
-      comment: 'Arrived in the signature keepsake box in under 3 days to Riyadh. The stitching detail along the cuffs is pure couture.'
+      title: 'Bespoke fit & lovely finish',
+      comment: 'Arrived in the signature keepsake box in under 4 days to Riyadh. The stitching detail along the cuffs is pure couture. Would love even more pastel options!'
     }
   ]);
   const [showReviewForm, setShowReviewForm] = useState(false);
@@ -553,10 +554,10 @@ export default function ProductDetailPage() {
         <span className="text-stone-300 font-light select-none shrink-0" aria-hidden="true">/</span>
         <button
           type="button"
-          onClick={() => navigateTo('shop', null, product.category || 'Abaya')}
+          onClick={() => navigateTo('shop', null, isWholesaleProduct ? 'Wholesale' : (product.category || 'Abaya'))}
           className="hover:text-[#7A0648] transition-colors shrink-0 cursor-pointer font-semibold text-stone-700 p-0 bg-transparent border-0 inline-flex items-center"
         >
-          {product.category || 'Abayas'}
+          {isWholesaleProduct ? 'Wholesale' : (product.category || 'Abayas')}
         </button>
         {product.subcategory && (
           <>
@@ -575,7 +576,7 @@ export default function ProductDetailPage() {
             <span className="text-stone-300 font-light select-none shrink-0" aria-hidden="true">/</span>
             <button
               type="button"
-              onClick={() => navigateTo('shop', null, product.category || null, null, null, null, null, false, null, null, product.wholesaleType)}
+              onClick={() => navigateTo('shop', null, 'Wholesale', null, null, null, null, false, null, null, product.wholesaleType)}
               className="hover:text-[#7A0648] transition-colors shrink-0 cursor-pointer font-semibold text-amber-800 p-0 bg-transparent border-0 inline-flex items-center"
             >
               {product.wholesaleType}
@@ -750,13 +751,16 @@ export default function ProductDetailPage() {
                 onClick={scrollToReviews}
                 className="flex items-center gap-1.5 text-stone-600 hover:text-[#7A0648] transition-colors cursor-pointer group"
               >
-                <div className="flex items-center text-[#FFD700]">
-                  {[...Array(5)].map((_, i) => (
-                    <Star key={i} className="w-3.5 h-3.5 fill-[#FFD700] text-[#FFD700]" strokeWidth={1} />
-                  ))}
-                </div>
-                <span className="font-bold text-stone-800">{product.rating || '5.0'}</span>
-                <span className="text-stone-500 group-hover:underline">({product.reviewsCount || '118'} reviews)</span>
+                <StarRating
+                  rating={product.rating}
+                  reviewsCount={product.reviewsCount}
+                  size="sm"
+                  showScore={true}
+                  showCount={true}
+                  countFormat="full"
+                  scoreClass="font-bold text-stone-800"
+                  countClass="text-stone-500 group-hover:underline"
+                />
               </button>
             </div>
 
@@ -879,15 +883,15 @@ export default function ProductDetailPage() {
           </div>
 
           {/* Wholesale B2B MOQ Callout Card */}
-          {product.category === 'WHOLESALE' && (
+          {isWholesaleProduct && (
             <div className="p-4 rounded-xl bg-amber-50 border border-amber-200/80 space-y-1.5">
               <div className="flex items-center justify-between">
                 <span className="text-xs font-bold uppercase tracking-wider text-amber-900 flex items-center gap-1.5">
                   <Award className="w-4 h-4 text-amber-700" />
-                  B2B Wholesale Lot
+                  Wholesale
                 </span>
                 <span className="text-[11px] font-bold text-amber-800 bg-amber-100/80 px-2 py-0.5 rounded-full border border-amber-300/60">
-                  MOQ: {product.wholesaleMinQty || 10} Pieces
+                  MOQ: {product.wholesaleMinQty || product.moq || 10} Pieces
                 </span>
               </div>
               <p className="text-xs text-amber-800 leading-relaxed font-medium">
@@ -1061,40 +1065,51 @@ export default function ProductDetailPage() {
             Let Customers Speak For Us
           </h2>
           <div className="flex items-center justify-center gap-2 pt-1 text-sm">
-            <div className="flex items-center text-[#FFD700]">
-              {[...Array(5)].map((_, i) => (
-                <Star key={i} className="w-4 h-4 fill-[#FFD700] text-[#FFD700]" strokeWidth={1} />
-              ))}
-            </div>
-            <span className="font-bold text-[#1E141B]">5.0 / 5</span>
-            <span className="text-stone-500 font-medium">based on {reviewsList.length + 115} reviews</span>
+            <StarRating rating={product.rating} size="md" />
+            <span className="font-bold text-[#1E141B]">{Number(product.rating || 4.8).toFixed(1)} / 5</span>
+            <span className="text-stone-500 font-medium">based on {product.reviewsCount || (reviewsList.length + 68)} verified reviews</span>
           </div>
         </div>
 
         {/* Rating Breakdown Bars & Write a Review Action */}
         <div className="max-w-3xl mx-auto p-4 sm:p-6 bg-white border border-stone-200 shadow-xs flex flex-col sm:flex-row items-center justify-between gap-6">
           <div className="w-full sm:w-1/2 space-y-1.5 text-xs text-stone-600">
-            <div className="flex items-center gap-2">
-              <span className="w-12 text-stone-600 font-medium">5 star</span>
-              <div className="flex-1 h-2 bg-stone-200 overflow-hidden">
-                <div className="h-full bg-[#7A0648] w-[96%]" />
-              </div>
-              <span className="w-8 text-right font-bold text-[#1E141B]">96%</span>
-            </div>
-            <div className="flex items-center gap-2">
-              <span className="w-12 text-stone-600 font-medium">4 star</span>
-              <div className="flex-1 h-2 bg-stone-200 overflow-hidden">
-                <div className="h-full bg-[#7A0648] w-[4%]" />
-              </div>
-              <span className="w-8 text-right font-bold text-[#1E141B]">4%</span>
-            </div>
-            <div className="flex items-center gap-2">
-              <span className="w-12 text-stone-600 font-medium">3 star</span>
-              <div className="flex-1 h-2 bg-stone-200 overflow-hidden">
-                <div className="h-full bg-[#7A0648] w-[0%]" />
-              </div>
-              <span className="w-8 text-right font-bold text-[#1E141B]">0%</span>
-            </div>
+            {(() => {
+              const r = Number(product.rating || 4.8);
+              let p5 = 82, p4 = 15, p3 = 3;
+              if (r >= 4.95) { p5 = 98; p4 = 2; p3 = 0; }
+              else if (r >= 4.85) { p5 = 90; p4 = 9; p3 = 1; }
+              else if (r >= 4.75) { p5 = 82; p4 = 15; p3 = 3; }
+              else if (r >= 4.65) { p5 = 74; p4 = 21; p3 = 5; }
+              else if (r >= 4.55) { p5 = 66; p4 = 27; p3 = 7; }
+              else { p5 = 58; p4 = 34; p3 = 8; }
+
+              return (
+                <>
+                  <div className="flex items-center gap-2">
+                    <span className="w-12 text-stone-600 font-medium">5 star</span>
+                    <div className="flex-1 h-2 bg-stone-200 overflow-hidden">
+                      <div className="h-full bg-[#7A0648] transition-all duration-500" style={{ width: `${p5}%` }} />
+                    </div>
+                    <span className="w-8 text-right font-bold text-[#1E141B]">{p5}%</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <span className="w-12 text-stone-600 font-medium">4 star</span>
+                    <div className="flex-1 h-2 bg-stone-200 overflow-hidden">
+                      <div className="h-full bg-[#7A0648] transition-all duration-500" style={{ width: `${p4}%` }} />
+                    </div>
+                    <span className="w-8 text-right font-bold text-[#1E141B]">{p4}%</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <span className="w-12 text-stone-600 font-medium">3 star</span>
+                    <div className="flex-1 h-2 bg-stone-200 overflow-hidden">
+                      <div className="h-full bg-[#7A0648] transition-all duration-500" style={{ width: `${p3}%` }} />
+                    </div>
+                    <span className="w-8 text-right font-bold text-[#1E141B]">{p3}%</span>
+                  </div>
+                </>
+              );
+            })()}
           </div>
 
           <div className="text-center sm:text-right shrink-0">
@@ -1192,9 +1207,17 @@ export default function ProductDetailPage() {
             <div key={rev.id} className="p-5 bg-white border border-stone-200 shadow-xs space-y-2.5 flex flex-col justify-between">
               <div className="space-y-2">
                 <div className="flex items-center justify-between">
-                  <div className="flex items-center text-[#FFD700]">
-                    {[...Array(rev.rating)].map((_, i) => (
-                      <Star key={i} className="w-3.5 h-3.5 fill-[#FFD700] text-[#FFD700]" strokeWidth={1} />
+                  <div className="flex items-center gap-0.5 text-[#FFD700]">
+                    {[0, 1, 2, 3, 4].map((i) => (
+                      <Star
+                        key={i}
+                        className={`w-3.5 h-3.5 ${
+                          i < (rev.rating || 5)
+                            ? 'fill-[#FFD700] text-[#FFD700]'
+                            : 'text-stone-200 fill-stone-100'
+                        }`}
+                        strokeWidth={0.5}
+                      />
                     ))}
                   </div>
                   <span className="text-[10px] text-stone-400 uppercase tracking-wider font-semibold">{rev.date}</span>
@@ -1228,10 +1251,10 @@ export default function ProductDetailPage() {
         <section className="pt-8 sm:pt-14 border-t border-stone-200 space-y-6 text-[#1E141B]">
           <div className="text-center space-y-1">
             <p className="text-xs uppercase tracking-[0.2em] font-bold text-[#7A0648]">
-              {isWholesaleProduct ? 'B2B Wholesale Bundles' : 'Complementary Pieces'}
+              {isWholesaleProduct ? 'Wholesale Collection' : 'Complementary Pieces'}
             </p>
             <h2 className="text-xl sm:text-2xl font-bold tracking-wider uppercase text-[#1E141B]">
-              {isWholesaleProduct ? 'Related Wholesale Cartons' : 'You May Also Like'}
+              {isWholesaleProduct ? 'Related Wholesale' : 'You May Also Like'}
             </h2>
           </div>
 

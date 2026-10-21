@@ -1,6 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { Star } from 'lucide-react';
 import { useShop } from '../context/ShopContext';
+import StarRating from './StarRating';
 
 function ProductTitle({ name, onClick, isHovered }) {
   const containerRef = useRef(null);
@@ -141,15 +142,17 @@ export default function ProductCard({ product }) {
         </div>
 
         {/* Star Rating Badge */}
-        <div className="flex items-center justify-center gap-1 pt-0.5">
-          <div className="flex items-center text-[#FFD700]">
-            {[...Array(5)].map((_, i) => (
-              <Star key={i} className="w-2.5 h-2.5 fill-[#FFD700] text-[#FFD700]" strokeWidth={0} />
-            ))}
-          </div>
-          <span className="text-[10px] text-stone-500 tracking-wider font-semibold">
-            ({Number(product.rating || 5.0).toFixed(1)})
-          </span>
+        <div className="flex items-center justify-center pt-0.5">
+          <StarRating
+            rating={product.rating}
+            reviewsCount={product.reviewsCount}
+            size="xs"
+            showScore={true}
+            showCount={true}
+            countFormat="parens"
+            scoreClass="text-[10.5px] font-bold text-stone-700"
+            countClass="text-[10px] text-stone-400"
+          />
         </div>
 
       </div>

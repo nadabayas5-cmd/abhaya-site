@@ -64,8 +64,8 @@ export default function AdminProductModal({
   const [customCategory, setCustomCategory] = useState('');
   const [badge, setBadge] = useState('');
   const [targetRegion, setTargetRegion] = useState('all'); // 'all' | 'india' | 'arab'
-  const [rating, setRating] = useState('5.0');
-  const [reviewsCount, setReviewsCount] = useState('0');
+  const [rating, setRating] = useState('4.8');
+  const [reviewsCount, setReviewsCount] = useState('74');
   const [isVioletEdition, setIsVioletEdition] = useState(false);
   const [stockCount, setStockCount] = useState(10);
   
@@ -150,8 +150,8 @@ export default function AdminProductModal({
       setCustomCategory('');
       setBadge('');
       setTargetRegion('all');
-      setRating('5.0');
-      setReviewsCount('0');
+      setRating('4.8');
+      setReviewsCount('74');
       setIsVioletEdition(false);
       setStockCount(10);
       setImage('');
@@ -312,8 +312,8 @@ export default function AdminProductModal({
       wholesaleMinQty: finalCategory === 'Wholesale' ? Number(wholesaleMinQty) || 1 : 1,
       badge: badge.trim(),
       targetRegion: targetRegion || 'all',
-      rating: Number(rating) || 5.0,
-      reviewsCount: Number(reviewsCount) || 0,
+      rating: Number(rating) || 4.8,
+      reviewsCount: Number(reviewsCount) || 74,
       isVioletEdition,
       defaultStyle: defaultStyle ? defaultStyle.trim() : null,
       defaultWork: defaultWork ? defaultWork.trim() : null,

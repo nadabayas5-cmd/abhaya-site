@@ -255,21 +255,28 @@ export default function ShopPage() {
         }
       }
 
-      // 2. Primary Category Filter
-      if (selectedCategory !== 'All') {
-        const catLower = selectedCategory.toLowerCase();
-        const prodCatLower = (product.category || '').toLowerCase();
-        
-        // Exact match or sub-token match for compound labels
-        const matchesCat = prodCatLower === catLower ||
-          prodCatLower.includes(catLower) ||
-          catLower.includes(prodCatLower) ||
-          (catLower === 'hijab' && prodCatLower.includes('hijab')) ||
-          (catLower === 'inner & prayer dress' && (prodCatLower.includes('inner') || prodCatLower.includes('prayer'))) ||
-          (catLower === 'kids abaya' && prodCatLower.includes('kids')) ||
-          (catLower === 'wholesale' && prodCatLower.includes('wholesale'));
+      // 2. Primary Category Filter & Strict Retail vs Wholesale Separation
+      const prodCatLower = (product.category || '').toLowerCase();
+      const isWholesaleProduct = prodCatLower.includes('wholesale');
+      const catLower = selectedCategory.toLowerCase();
 
-        if (!matchesCat) return false;
+      if (catLower === 'wholesale') {
+        // Wholesale Hub Mode: strictly only show Wholesale products
+        if (!isWholesaleProduct) return false;
+      } else {
+        // Retail Mode ("All Collections", "Abaya", "Hijaab", etc.): strictly NEVER show wholesale products
+        if (isWholesaleProduct) return false;
+
+        if (catLower !== 'all') {
+          const matchesCat = prodCatLower === catLower ||
+            prodCatLower.includes(catLower) ||
+            catLower.includes(prodCatLower) ||
+            (catLower === 'hijab' && prodCatLower.includes('hijab')) ||
+            (catLower === 'inner & prayer dress' && (prodCatLower.includes('inner') || prodCatLower.includes('prayer'))) ||
+            (catLower === 'kids abaya' && prodCatLower.includes('kids'));
+
+          if (!matchesCat) return false;
+        }
       }
 
       // 3. Max Price Slider
@@ -665,7 +672,7 @@ export default function ShopPage() {
       )}
 
       {/* 3.B: For Wholesale — Subtypes */}
-      {selectedCategory === 'Wholesale' && (
+      {(selectedCategory || '').toLowerCase() === 'wholesale' && (
         <div className="bg-[#FAF8F5] border border-[#FFD700]/40 p-4 sm:p-5 space-y-3 animate-fade-in">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-stone-200 pb-2.5">
             <div className="flex items-center gap-2">
