@@ -169,8 +169,17 @@ export default function AdminPage() {
           (p.description && p.description.toLowerCase().includes(q));
       }
 
-      // Category Filter
-      const matchesCategory = selectedCategory === 'All' || p.category === selectedCategory;
+      // Category Filter (support exact and slug/name variations like 'Wholesale (B2B)')
+      const selCatLower = selectedCategory.toLowerCase();
+      const pCatLower = (p.category || '').toLowerCase();
+      const matchesCategory = selectedCategory === 'All' ||
+        p.category === selectedCategory ||
+        pCatLower === selCatLower ||
+        (selCatLower.includes('wholesale') && pCatLower.includes('wholesale')) ||
+        (selCatLower.includes('shaila') && pCatLower.includes('shaila')) ||
+        (selCatLower.includes('hijab') && pCatLower.includes('hijab')) ||
+        (selCatLower.includes('inner') && pCatLower.includes('inner')) ||
+        (selCatLower.includes('kids') && pCatLower.includes('kids'));
 
       // Style / Silhouette
       const matchesStyle = selectedStyle === 'All' ||
@@ -198,6 +207,25 @@ export default function AdminPage() {
 
       return matchesSearch && matchesCategory && matchesStyle && matchesWork && matchesMarket && matchesStock;
     });
+
+    const wholesaleInDb = baseProducts.filter(p => (p.category || '').toLowerCase().includes('wholesale'));
+    const wholesaleAbayaInDb = wholesaleInDb.filter(p => (p.wholesaleType || '').toLowerCase() === 'abaya');
+    const wholesaleInFiltered = list.filter(p => (p.category || '').toLowerCase().includes('wholesale'));
+    const wholesaleAbayaInFiltered = list.filter(p => (p.category || '').toLowerCase().includes('wholesale') && (p.wholesaleType || '').toLowerCase() === 'abaya');
+
+    console.group(`%c[AdminPage ⚙️ Filter Diagnostics] ${list.length} of ${baseProducts.length} products displayed`, 'color: #7A0648; font-weight: bold;');
+    console.log('Active Admin Filters:', {
+      category: selectedCategory,
+      market: selectedMarketFilter,
+      style: selectedStyle,
+      work: selectedWork,
+      stock: stockFilter,
+      search: searchQuery || '(none)'
+    });
+    console.log(`Wholesale in Admin: ${wholesaleInDb.length} in DB (Abayas: ${wholesaleAbayaInDb.length}) => ${wholesaleInFiltered.length} matching active filters (Abayas: ${wholesaleAbayaInFiltered.length})`);
+    console.groupEnd();
+
+    return list;
   }, [baseProducts, searchQuery, selectedCategory, selectedStyle, selectedWork, selectedMarketFilter, stockFilter]);
 
   // Paginated slice for current page
@@ -628,12 +656,12 @@ export default function AdminPage() {
                             <span className="inline-block px-2 py-0.5 rounded-md bg-royal-violet/10 text-royal-violet text-[10px] font-bold border border-royal-violet/20">
                               {p.category || 'Abaya'}
                             </span>
-                            {p.category === 'WHOLESALE' ? (
+                            {(p.category || '').toUpperCase() === 'WHOLESALE' ? (
                               <div className="text-[10px] text-stone-600 font-semibold">
                                 {p.wholesaleType && <span className="text-amber-800">Type: {p.wholesaleType}</span>}
                                 {p.wholesaleMinQty && <span className="text-stone-500 block">MOQ: {p.wholesaleMinQty} pcs</span>}
                               </div>
-                            ) : p.category === 'ABAYA' ? (
+                            ) : (p.category || '').toUpperCase() === 'ABAYA' ? (
                               <div className="text-[10px] text-stone-500">
                                 {p.defaultStyle && <span className="font-medium text-stone-700">{p.defaultStyle}</span>}
                                 {p.defaultWork && <span className="text-stone-400"> • {p.defaultWork}</span>}

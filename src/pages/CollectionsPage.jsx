@@ -541,15 +541,21 @@ export default function CollectionsPage() {
       }
     });
 
-    console.log(`[CollectionsPage] Filtered products: ${result.length} shown of ${PRODUCTS.length} total in catalog. Active filters:`, {
+    console.group(`%c[CollectionsPage 📚 Filter Diagnostics] ${result.length} of ${PRODUCTS.length} visible products shown`, 'color: #982476; font-weight: bold;');
+    console.log('Active Filters:', {
       searchQuery,
       selectedCategories,
+      selectedWholesaleTypes,
       selectedStyles,
       selectedWorks,
       selectedColors,
       selectedSizes,
       priceRange
     });
+    const wholesaleItems = result.filter(p => (p.category || '').toLowerCase().includes('wholesale'));
+    const wholesaleAbayaItems = wholesaleItems.filter(p => (p.wholesaleType || '').toLowerCase() === 'abaya');
+    console.log(`Wholesale Products in view: ${wholesaleItems.length} (Wholesale Abayas: ${wholesaleAbayaItems.length})`);
+    console.groupEnd();
 
     return result;
   }, [

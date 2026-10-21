@@ -365,11 +365,38 @@ export function ShopProvider({ children }) {
   // Fetch Products from Supabase on mount
   const refreshProducts = useCallback(async () => {
     setIsProductsLoading(true);
-    console.log('[ShopContext] 🔄 refreshProducts triggered...');
+    console.log('%c[ShopContext] 🔄 refreshProducts triggered...', 'color: #982476; font-weight: bold;');
     try {
       const { data, source, error } = await fetchProductsFromSupabase();
       console.log('[ShopContext] 📦 refreshProducts finished => count:', data?.length ?? 0, 'source:', source, 'error:', error);
       if (Array.isArray(data)) {
+        // Diagnostic audit of loaded products
+        const catCounts = {};
+        const wholesaleTypes = {};
+        const regionCounts = {};
+        data.forEach(p => {
+          const c = p.category || 'Unassigned';
+          catCounts[c] = (catCounts[c] || 0) + 1;
+          const r = p.targetRegion || 'all';
+          regionCounts[r] = (regionCounts[r] || 0) + 1;
+          if ((p.category || '').toLowerCase().includes('wholesale')) {
+            const wt = p.wholesaleType || 'Unassigned';
+            wholesaleTypes[wt] = (wholesaleTypes[wt] || 0) + 1;
+          }
+        });
+
+        console.groupCollapsed('%c[ShopContext 🔍 Catalog Diagnostics] Products breakdown by Category, Wholesale Type & Region', 'color: #982476; font-weight: bold;');
+        console.log('Categories count:', catCounts);
+        console.log('Wholesale Sub-types count:', wholesaleTypes);
+        console.log('Target Regions count:', regionCounts);
+        
+        const wholesaleAbayas = data.filter(p => 
+          (p.category || '').toLowerCase().includes('wholesale') && 
+          (p.wholesaleType || '').toLowerCase() === 'abaya'
+        );
+        console.log(`[ShopContext] 🏷️ Found ${wholesaleAbayas.length} "Wholesale" products with Wholesale Type = "Abaya":`, wholesaleAbayas);
+        console.groupEnd();
+
         setProducts(data);
       }
     } catch (err) {
@@ -692,8 +719,50 @@ export function ShopProvider({ children }) {
   const activeRegion = currency === 'AED' ? 'arab' : 'india';
 
   const visibleProducts = useMemo(() => {
-    return products.filter((p) => isProductVisibleForRegion(p, activeRegion));
-  }, [products, activeRegion]);
+    const filtered = products.filter((p) => isProductVisibleForRegion(p, activeRegion));
+    
+    // Detailed diagnostics for Wholesale / Wholesale Abaya visibility
+    const wholesaleAll = products.filter(p => (p.category || '').toLowerCase().includes('wholesale'));
+    const wholesaleAbayaAll = products.filter(p => 
+      (p.category || '').toLowerCase().includes('wholesale') && 
+      (p.wholesaleType || '').toLowerCase() === 'abaya'
+    );
+    const wholesaleVisible = filtered.filter(p => (p.category || '').toLowerCase().includes('wholesale'));
+    const wholesaleAbayaVisible = filtered.filter(p => 
+      (p.category || '').toLowerCase().includes('wholesale') && 
+      (p.wholesaleType || '').toLowerCase() === 'abaya'
+    );
+
+    console.groupCollapsed(`%c[ShopContext] 🌍 Region Visibility: ${filtered.length} / ${products.length} products visible (Active Region: "${activeRegion}", Currency: "${currency}")`, 'color: #0d9488; font-weight: bold;');
+    console.log(`Active Region: "${activeRegion}" | Currency: "${currency}"`);
+    console.log(`Total Products in DB: ${products.length} => Visible: ${filtered.length} (${products.length - filtered.length} hidden)`);
+    console.log(`Wholesale Products in DB: ${wholesaleAll.length} => Visible in "${activeRegion}": ${wholesaleVisible.length}`);
+    console.log(`Wholesale "Abaya" Products in DB: ${wholesaleAbayaAll.length} => Visible in "${activeRegion}": ${wholesaleAbayaVisible.length}`);
+
+    if (wholesaleAbayaAll.length > 0 && wholesaleAbayaVisible.length === 0) {
+      console.warn(
+        `%c[ShopContext ⚠️ ATTENTION] All ${wholesaleAbayaAll.length} "Wholesale Abaya" products are currently HIDDEN!\n` +
+        `• Active User Region: "${activeRegion}" (Currency: ${currency})\n` +
+        `• Products targetRegion in DB: [${Array.from(new Set(wholesaleAbayaAll.map(p => p.targetRegion || 'null'))).join(', ')}]\n` +
+        `• Why they are not reflecting: They were saved for the UAE/Arab market only (targetRegion='arab'). In India (INR mode), the regional filter only displays products with targetRegion='all' or targetRegion='india'.\n` +
+        `• Solution: Switch currency to AED or edit the product to set Target Audience = "Global / All Markets".`,
+        'background: #fff3cd; color: #856404; font-weight: bold; padding: 6px; font-size: 11px;'
+      );
+      console.table(wholesaleAbayaAll.map(p => ({
+        id: p.id,
+        name: p.name,
+        category: p.category,
+        wholesaleType: p.wholesaleType,
+        targetRegion: p.targetRegion,
+        visibilityStatus: `HIDDEN in ${activeRegion} (requires 'all' or '${activeRegion}')`
+      })));
+    } else if (wholesaleAbayaVisible.length > 0) {
+      console.log(`%c[ShopContext ✅] ${wholesaleAbayaVisible.length} Wholesale "Abaya" products are VISIBLE in region "${activeRegion}":`, 'color: #16a34a; font-weight: bold;', wholesaleAbayaVisible);
+    }
+    console.groupEnd();
+
+    return filtered;
+  }, [products, activeRegion, currency]);
 
   const getProductPrice = useCallback(
     (product) => getProductPriceForCurrency(product, currency),

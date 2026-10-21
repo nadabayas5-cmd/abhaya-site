@@ -27,6 +27,9 @@ import Pagination from '../components/Pagination';
 export default function ShopPage() {
   const {
     PRODUCTS,
+    allProducts,
+    activeRegion,
+    currency,
     selectedCategoryFilter,
     setSelectedCategoryFilter,
     selectedStyleFilter: contextStyleFilter,
@@ -370,19 +373,53 @@ export default function ShopPage() {
       return 0; // featured default
     });
 
-    console.log(`[ShopPage] Filtered products: ${result.length} shown of ${PRODUCTS.length} total in catalog. Active filters:`, {
-      selectedCategory,
-      selectedStyleFilter,
-      selectedWorkFilter,
-      selectedShade,
-      selectedBadge,
-      searchQuery,
-      maxPrice
+    // Detailed Wholesale Abaya diagnostic audits
+    const wholesaleInDb = (allProducts || []).filter(p => (p.category || '').toLowerCase().includes('wholesale'));
+    const wholesaleAbayaInDb = wholesaleInDb.filter(p => (p.wholesaleType || '').toLowerCase() === 'abaya');
+    const wholesaleInCatalog = PRODUCTS.filter(p => (p.category || '').toLowerCase().includes('wholesale'));
+    const wholesaleAbayaInCatalog = wholesaleInCatalog.filter(p => (p.wholesaleType || '').toLowerCase() === 'abaya');
+    const wholesaleAbayaInResults = result.filter(p => (p.category || '').toLowerCase().includes('wholesale') && (p.wholesaleType || '').toLowerCase() === 'abaya');
+
+    console.group(`%c[ShopPage 🛍️ Filter Diagnostics] ${result.length} of ${PRODUCTS.length} visible products shown`, 'color: #7A0648; font-weight: bold;');
+    console.log('Active Filters:', {
+      category: selectedCategory,
+      wholesaleType: selectedWholesaleType,
+      style: selectedStyleFilter,
+      work: selectedWorkFilter,
+      shade: selectedShade,
+      badge: selectedBadge,
+      search: searchQuery || '(none)',
+      maxPrice,
+      sortBy
     });
+    console.log(`Wholesale Summary: ${wholesaleInDb.length} in DB | ${wholesaleInCatalog.length} in region "${activeRegion}" | ${result.filter(p => (p.category || '').toLowerCase().includes('wholesale')).length} in current view`);
+    console.log(`Wholesale "Abaya" Summary: ${wholesaleAbayaInDb.length} in DB | ${wholesaleAbayaInCatalog.length} in region "${activeRegion}" | ${wholesaleAbayaInResults.length} in current view`);
+
+    if (wholesaleAbayaInDb.length > 0 && wholesaleAbayaInCatalog.length === 0) {
+      console.warn(
+        `%c[ShopPage ⚠️ REGION MISMATCH] ${wholesaleAbayaInDb.length} "Wholesale Abaya" products exist in the database, but 0 are in the visible catalog for your market (${activeRegion} / ${currency})!\n` +
+        `• Reason: They have targetRegion='arab'. Products with targetRegion='arab' only show when currency is AED.\n` +
+        `• Switch to AED via the currency selector (or set targetRegion='all' in Admin) to see them!`,
+        'background: #fff3cd; color: #856404; font-weight: bold; padding: 4px;'
+      );
+    } else if (wholesaleAbayaInCatalog.length > 0 && wholesaleAbayaInResults.length === 0) {
+      console.warn(
+        `%c[ShopPage ⚠️ FILTER EXCLUSION] ${wholesaleAbayaInCatalog.length} "Wholesale Abaya" products are visible in this market, but they are filtered out by current ShopPage filters!\n` +
+        `• Current category: "${selectedCategory}" | Wholesale Type: "${selectedWholesaleType}".\n` +
+        `• To show them, click the "Wholesale (B2B)" category tab, then click the "Abaya" subtype button (or "All Wholesale").`,
+        'background: #ffebee; color: #c62828; font-weight: bold; padding: 4px;'
+      );
+    } else if (wholesaleAbayaInResults.length > 0) {
+      console.log(`%c[ShopPage ✅] Displaying ${wholesaleAbayaInResults.length} Wholesale Abaya products:`, 'color: #16a34a; font-weight: bold;', wholesaleAbayaInResults);
+    }
+    console.groupEnd();
 
     return result;
   }, [
     PRODUCTS,
+    allProducts,
+    activeRegion,
+    currency,
     searchQuery,
     selectedCategory,
     maxPrice,
@@ -653,6 +690,7 @@ export default function ShopPage() {
             <div className="flex items-center gap-1.5 flex-wrap">
               <button
                 onClick={() => {
+                  console.log('%c[ShopPage] 🔘 Clicked "All Wholesale"', 'color: #7A0648; font-weight: bold;');
                   setSelectedWholesaleType('All');
                   if (setContextWholesaleTypeFilter) setContextWholesaleTypeFilter('All');
                 }}
@@ -668,7 +706,8 @@ export default function ShopPage() {
                 <button
                   key={type.id}
                   onClick={() => {
-                    const next = selectedWholesaleType === type.name ? 'All' : type.name;
+                    const next = selectedWholesaleType.toLowerCase() === type.name.toLowerCase() ? 'All' : type.name;
+                    console.log(`%c[ShopPage] 🔘 Clicked Wholesale Sub-type: "${type.name}". Next filter: "${next}"`, 'color: #7A0648; font-weight: bold;');
                     setSelectedWholesaleType(next);
                     if (setContextWholesaleTypeFilter) setContextWholesaleTypeFilter(next);
                   }}
@@ -1034,19 +1073,37 @@ export default function ShopPage() {
               {activeDrawerTab === 'wholesale' && (
                 <div className="space-y-2.5 animate-fade-in">
                   <div className="grid grid-cols-1 gap-2">
+                    <button
+                      onClick={() => {
+                        console.log('%c[ShopPage Drawer] 🔘 Clicked "All Wholesale"', 'color: #7A0648; font-weight: bold;');
+                        setSelectedWholesaleType('All');
+                        if (setContextWholesaleTypeFilter) setContextWholesaleTypeFilter('All');
+                      }}
+                      className={`p-3 text-xs font-semibold rounded-none text-left border flex items-center justify-between cursor-pointer ${
+                        selectedWholesaleType === 'All' ? 'bg-[#F5EAF1] text-[#7A0648] border-[#7A0648] font-bold' : 'bg-white'
+                      }`}
+                    >
+                      <div className="font-bold">All Wholesale Products</div>
+                      {selectedWholesaleType === 'All' && <Check className="w-4 h-4 text-[#7A0648]" />}
+                    </button>
                     {WHOLESALE_TYPES.map((type) => (
                       <button
                         key={type.id}
-                        onClick={() => setSelectedWholesaleType(type.name)}
+                        onClick={() => {
+                          const next = selectedWholesaleType.toLowerCase() === type.name.toLowerCase() ? 'All' : type.name;
+                          console.log(`%c[ShopPage Drawer] 🔘 Clicked Wholesale Sub-type: "${type.name}". Next filter: "${next}"`, 'color: #7A0648; font-weight: bold;');
+                          setSelectedWholesaleType(next);
+                          if (setContextWholesaleTypeFilter) setContextWholesaleTypeFilter(next);
+                        }}
                         className={`p-3 text-xs font-semibold rounded-none text-left border flex items-center justify-between cursor-pointer ${
-                          selectedWholesaleType === type.name ? 'bg-[#F5EAF1] text-[#7A0648] border-[#7A0648] font-bold' : 'bg-white'
+                          selectedWholesaleType.toLowerCase() === type.name.toLowerCase() ? 'bg-[#F5EAF1] text-[#7A0648] border-[#7A0648] font-bold' : 'bg-white'
                         }`}
                       >
                         <div>
                           <div className="font-bold">Wholesale {type.name}</div>
                           <div className="text-[10px] text-stone-500">{type.description}</div>
                         </div>
-                        {selectedWholesaleType === type.name && <Check className="w-4 h-4 text-[#7A0648]" />}
+                        {selectedWholesaleType.toLowerCase() === type.name.toLowerCase() && <Check className="w-4 h-4 text-[#7A0648]" />}
                       </button>
                     ))}
                   </div>

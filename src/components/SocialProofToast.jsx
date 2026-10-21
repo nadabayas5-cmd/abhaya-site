@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { CheckCircle2, X, Sparkles, ShoppingBag } from 'lucide-react';
 import { useShop } from '../context/ShopContext';
+import { getAssetUrl } from '../lib/cms';
 
 // Authentic UAE Locations & Neighborhoods
 const UAE_LOCATIONS = [
@@ -74,8 +75,15 @@ export default function SocialProofToast() {
   const hideTimerRef = useRef(null);
   const lastProductIndexRef = useRef(-1);
 
-  // Pool of available products
-  const productList = (PRODUCTS && PRODUCTS.length > 0) ? PRODUCTS : (allProducts || []);
+  // Pool of available products (context-aware: don't show retail products on wholesale pages)
+  const isWholesaleContext = location.search.toLowerCase().includes('wholesale') ||
+    location.pathname.toLowerCase().includes('wholesale');
+
+  const pool = (PRODUCTS && PRODUCTS.length > 0) ? PRODUCTS : (allProducts || []);
+  const productList = pool.filter(p => {
+    const isWholesale = (p.category || '').toLowerCase().includes('wholesale');
+    return isWholesaleContext ? isWholesale : !isWholesale;
+  });
 
   const getRandomItem = (arr) => arr[Math.floor(Math.random() * arr.length)];
 
@@ -169,7 +177,9 @@ export default function SocialProofToast() {
     }, 45000);
   };
 
-  const productImage = product.images?.[0] || product.image || '/images/placeholder.jpg';
+  const fallbackProductImg = getAssetUrl('collection-images/work_others.jpg');
+  const rawImg = product.images?.[0] || product.image;
+  const productImage = rawImg ? getAssetUrl(rawImg) : fallbackProductImg;
 
   return (
     <div
@@ -206,7 +216,7 @@ export default function SocialProofToast() {
             className="w-full h-full object-cover object-center group-hover:scale-105 transition-transform duration-300"
             onError={(e) => {
               e.target.onerror = null;
-              e.target.src = 'https://images.unsplash.com/photo-1584917865442-de89df76afd3?w=300&q=80';
+              e.target.src = fallbackProductImg;
             }}
           />
           <div className="absolute bottom-0 inset-x-0 bg-gradient-to-t from-black/60 to-transparent p-0.5 text-center">

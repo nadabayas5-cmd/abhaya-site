@@ -3,6 +3,7 @@ import { Package, Search, Truck, CheckCircle2, Clock, MapPin, ShieldCheck, Arrow
 import { useShop } from '../context/ShopContext';
 import { WHATSAPP_PHONE } from '../utils/whatsapp';
 import { rateLimiter } from '../lib/rateLimit';
+import { getAssetUrl } from '../lib/cms';
 
 export default function OrderLookupPage() {
   const { navigateTo, formatPrice, showToast } = useShop();
@@ -28,14 +29,14 @@ export default function OrderLookupPage() {
         spec: 'Size 56 • Open Abaya Cut • Handwork Embroidery • 100% Mulberry Silk',
         price: 185,
         quantity: 1,
-        image: 'https://lh3.googleusercontent.com/aida-public/AB6AXuB1pd9NiCkfaDXafhb_-Uh3AA4XfN_AwnHEOOx0x2g2ngtcqCTGLjvTaBkKb-K-NzQCG24IEz1UecYCkOoBZQCz8Noq1fcMtAEZXyLpJZs8oZaOU9p5FhAShjG20FoGotY7Q5RtZ_fkUFk2HiRAkqY7a_y5R8pdolKPAtOtdjB3HFdhHKgY2Vfkv8U7Mfjej74-_slJxvP0a9gXoTwEPOLi7mSF52g0Nz5NZjvjyQzAgbD45y67GOUWkw'
+        image: getAssetUrl('hero-images/hero_midnight_espresso_silk.jpg')
       },
       {
         name: 'Royal Violet Mulberry Silk Abaya',
         spec: 'Size 56 • Butterfly / Farasha Cut • Stonework Craft',
         price: 210,
         quantity: 1,
-        image: 'https://lh3.googleusercontent.com/aida-public/AB6AXuBYEamtzjpK7ME6SNcwB_Dm777cIG9hjrlL-HktMD3xXRRagPMwnPzQ6iQe0viQ-TzLh4QmpxHcu3NVanxe3hDnC2QRxOeS2lYJYUCj57wjk6s6zQPxuGfRymUJvAtpdqSxQyOCVxYVVXZeKjX1PtHzUwTdxLxRFkQ-uy0Wkdt9PLVSix-WW_Yhj9Q-7vckCUPA1NjfPSGWo1RpBTx4655Eg32yHhxICDT7wKDiG-eqw4hPAEADpyQ5vA'
+        image: getAssetUrl('hero-images/hero_royal_amethyst_chiffon.jpg')
       }
     ],
     timeline: [

@@ -17,7 +17,8 @@ function QuickViewModalContent({ product, onClose }) {
   const [selectedSize, setSelectedSize] = useState(DEFAULT_ABAYA_SIZE);
   const [customMeasurements, setCustomMeasurements] = useState({ height: '', bust: '', length: '' });
   const [activeImageIdx, setActiveImageIdx] = useState(0);
-  const [quantity, setQuantity] = useState(product.category === 'WHOLESALE' ? (product.wholesaleMinQty || 10) : 1);
+  const isWholesale = (product.category || '').toLowerCase().includes('wholesale');
+  const [quantity, setQuantity] = useState(isWholesale ? (product.wholesaleMinQty || 10) : 1);
 
   const images = product.gallery && product.gallery.length > 0
     ? product.gallery

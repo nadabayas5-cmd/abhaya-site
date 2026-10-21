@@ -13,6 +13,7 @@ import {
   Check,
   CheckCircle2,
   ArrowRight,
+  ArrowLeft,
   Share2,
   PackageCheck,
   ChevronLeft,
@@ -261,8 +262,27 @@ export default function ProductDetailPage() {
 
   const productColor = product.color?.trim() || product.colors?.[0]?.name || '';
   const currentColor = product.colors?.[0] || (productColor ? { name: productColor, hex: '#1C1C1C' } : { name: 'Standard', hex: '#1C1C1C' });
-  const images = product.gallery && product.gallery.length > 0 ? product.gallery : [product.image];
-  const relatedProducts = PRODUCTS.filter((p) => p.id !== product.id).slice(0, 4);
+  const isWholesaleProduct = (product.category || '').toLowerCase().includes('wholesale');
+  const relatedProducts = useMemo(() => {
+    const isWholesale = (product.category || '').toLowerCase().includes('wholesale');
+    const sameCategoryPool = PRODUCTS.filter((p) => {
+      if (p.id === product.id) return false;
+      const pIsWholesale = (p.category || '').toLowerCase().includes('wholesale');
+      return isWholesale ? pIsWholesale : !pIsWholesale;
+    });
+
+    if (isWholesale && product.wholesaleType) {
+      const sameType = sameCategoryPool.filter(
+        p => (p.wholesaleType || '').toLowerCase() === product.wholesaleType.toLowerCase()
+      );
+      const otherTypes = sameCategoryPool.filter(
+        p => (p.wholesaleType || '').toLowerCase() !== product.wholesaleType.toLowerCase()
+      );
+      return [...sameType, ...otherTypes].slice(0, 4);
+    }
+
+    return sameCategoryPool.slice(0, 4);
+  }, [PRODUCTS, product]);
   const regionDeliveryFee = deliverySettings?.[activeRegion]?.deliveryFee ?? 0;
   const subtitleText = product.subtitle?.trim() || '';
   const isShortTagline = subtitleText.length > 0 && subtitleText.length <= TAGLINE_MAX_LENGTH;
@@ -507,6 +527,21 @@ export default function ProductDetailPage() {
         aria-label="Breadcrumb"
         className="flex items-center flex-wrap gap-x-2 gap-y-1.5 text-[11px] sm:text-xs uppercase tracking-widest text-stone-500 pt-1 pb-3 mb-6 sm:mb-8 border-b border-stone-200/60 leading-none"
       >
+        <button
+          type="button"
+          onClick={() => {
+            if (window.history.length > 1) {
+              window.history.back();
+            } else {
+              navigateTo('shop', null, isWholesaleProduct ? 'Wholesale' : (product.category || 'All'));
+            }
+          }}
+          className="hover:text-[#7A0648] transition-colors shrink-0 cursor-pointer font-bold text-stone-700 p-0 bg-transparent border-0 inline-flex items-center gap-1 mr-2 pr-2.5 border-r border-stone-300"
+          title="Go back to previous page"
+        >
+          <ArrowLeft className="w-3.5 h-3.5" />
+          <span>Back</span>
+        </button>
         <button 
           type="button"
           onClick={() => navigateTo('home')} 
@@ -1188,22 +1223,24 @@ export default function ProductDetailPage() {
       {/* ========================================================================= */}
       {/* 4. RELATED PRODUCTS / "YOU MAY ALSO LIKE" SECTION                         */}
       {/* ========================================================================= */}
-      <section className="pt-8 sm:pt-14 border-t border-stone-200 space-y-6 text-[#1E141B]">
-        <div className="text-center space-y-1">
-          <p className="text-xs uppercase tracking-[0.2em] font-bold text-[#7A0648]">
-            Complementary Pieces
-          </p>
-          <h2 className="text-xl sm:text-2xl font-bold tracking-wider uppercase text-[#1E141B]">
-            You May Also Like
-          </h2>
-        </div>
+      {relatedProducts.length > 0 && (
+        <section className="pt-8 sm:pt-14 border-t border-stone-200 space-y-6 text-[#1E141B]">
+          <div className="text-center space-y-1">
+            <p className="text-xs uppercase tracking-[0.2em] font-bold text-[#7A0648]">
+              {isWholesaleProduct ? 'B2B Wholesale Bundles' : 'Complementary Pieces'}
+            </p>
+            <h2 className="text-xl sm:text-2xl font-bold tracking-wider uppercase text-[#1E141B]">
+              {isWholesaleProduct ? 'Related Wholesale Cartons' : 'You May Also Like'}
+            </h2>
+          </div>
 
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-6">
-          {relatedProducts.map((relProd) => (
-            <ProductCard key={relProd.id} product={relProd} />
-          ))}
-        </div>
-      </section>
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-6">
+            {relatedProducts.map((relProd) => (
+              <ProductCard key={relProd.id} product={relProd} />
+            ))}
+          </div>
+        </section>
+      )}
 
       </div>
 

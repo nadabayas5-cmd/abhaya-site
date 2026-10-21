@@ -1,6 +1,7 @@
 import React from 'react';
 import { Sparkles, ArrowRight, CheckCircle, ShieldCheck } from 'lucide-react';
 import { useShop } from '../context/ShopContext';
+import { getAssetUrl } from '../lib/cms';
 import ProductCard from '../components/ProductCard';
 
 export default function VioletEditionPage() {
@@ -15,7 +16,7 @@ export default function VioletEditionPage() {
       <section className="relative min-h-[50vh] sm:min-h-[60vh] bg-gradient-to-b from-[#580233] via-[#7A0648] to-[#68043D] text-white flex items-center justify-center text-center px-4 overflow-hidden font-semibold">
         <div className="absolute inset-0 opacity-20 pointer-events-none">
           <img
-            src="https://lh3.googleusercontent.com/aida-public/AB6AXuD-Sf1dgvSxQEdIcuInSxcRUwW6B-nBrZnNrAlOjxmNSTXEgqHvgbTWfGWkg5QYKVY0d9lsnGmuQwBuPf3yXH71nFMwMaVjxwvCixfo4u7HOgAOx-Z-drovy_YH-5MOgACvt0Pwe1icr3mK9M_bxXtmzzaUPFW_vyPfmx1GGDVrW_F2AgYUY40fBuNWPQElc5LbqXQuB_wLdkClmmrvrK6lHW6RI2zefAzNng6DUsYCen2Ggb06fdIVoA"
+            src={getAssetUrl('hero-images/hero_royal_amethyst_chiffon.jpg')}
             alt="The Violet Edition Editorial"
             className="w-full h-full object-cover"
           />
@@ -83,14 +84,14 @@ export default function VioletEditionPage() {
           <div className="lg:col-span-6 grid grid-cols-2 gap-3 sm:gap-4">
             <div className="aspect-[3/4] rounded-none overflow-hidden shadow-md border border-stone-200">
               <img
-                src="https://lh3.googleusercontent.com/aida-public/AB6AXuBYEamtzjpK7ME6SNcwB_Dm777cIG9hjrlL-HktMD3xXRRagPMwnPzQ6iQe0viQ-TzLh4QmpxHcu3NVanxe3hDnC2QRxOeS2lYJYUCj57wjk6s6zQPxuGfRymUJvAtpdqSxQyOCVxYVVXZeKjX1PtHzUwTdxLxRFkQ-uy0Wkdt9PLVSix-WW_Yhj9Q-7vckCUPA1NjfPSGWo1RpBTx4655Eg32yHhxICDT7wKDiG-eqw4hPAEADpyQ5vA"
+                src={getAssetUrl('collection-images/work_stonework.jpg')}
                 alt="Royal Violet silk"
                 className="w-full h-full object-cover"
               />
             </div>
             <div className="aspect-[3/4] rounded-none overflow-hidden shadow-md border border-stone-200 mt-6 sm:mt-8">
               <img
-                src="https://lh3.googleusercontent.com/aida-public/AB6AXuC62Pubod6uVtguy05UptSBB8reu4JabPY0PwbiPYPXlEDpfoyvWWm_LbQNVVa2vA_XcMhrFIIBFxe-w0OoW5jrkDOfsMuBpdvFb1KE8yOvQP3elB3A6xfTzLB8rTL6U3551DMCeA9q2oMYmOIJbZpUDr1DlrwerOph-ZxGnsRCoO8TEijtBJqZUIeWwRen9k_MtD_Br7xdakBcNQjnRMRcXfgOBFn60si3c_yt84p0f1dKFD9kqRq06g"
+                src={getAssetUrl('collection-images/work_embroidery.jpg')}
                 alt="Soft Amethyst silk"
                 className="w-full h-full object-cover"
               />

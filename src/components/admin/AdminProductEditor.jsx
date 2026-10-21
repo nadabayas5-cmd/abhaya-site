@@ -35,6 +35,7 @@ import {
 } from '../../data/products';
 import { uploadProductImage } from '../../lib/supabase';
 import { useShop } from '../../context/ShopContext';
+import { getAssetUrl } from '../../lib/cms';
 
 const PRESET_CATEGORIES = ['Abaya', 'Shaila/Shawl', 'Hijab', 'Inner & Prayer dress', 'Kids abaya', 'Wholesale'];
 const PRESET_BADGES = ['', 'Signature Bestseller', 'Limited Edition', 'Staff Pick', 'Artisan Atelier', 'Trending', 'Exclusive'];
@@ -319,7 +320,7 @@ export default function AdminProductEditor({
     setIsSaving(true);
     setErrorMessage('');
 
-    const fallbackImage = image.trim() || (gallery.length > 0 ? gallery[0] : 'https://lh3.googleusercontent.com/aida-public/AB6AXuB1pd9NiCkfaDXafhb_-Uh3AA4XfN_AwnHEOOx0x2g2ngtcqCTGLjvTaBkKb-K-NzQCG24IEz1UecYCkOoBZQCz8Noq1fcMtAEZXyLpJZs8oZaOU9p5FhAShjG20FoGotY7Q5RtZ_fkUFk2HiRAkqY7a_y5R8pdolKPAtOtdjB3HFdhHKgY2Vfkv8U7Mfjej74-_slJxvP0a9gXoTwEPOLi7mSF52g0Nz5NZjvjyQzAgbD45y67GOUWkw');
+    const fallbackImage = image.trim() || (gallery.length > 0 ? gallery[0] : getAssetUrl('collection-images/work_others.jpg'));
 
     const slugId = isEditing
       ? product.id
@@ -359,10 +360,24 @@ export default function AdminProductEditor({
       careInstructions: careInstructions.trim()
     };
 
-    console.log('[AdminProductEditor] Submitting productPayload to onSave:', productPayload);
+    console.group(`%c[AdminProductEditor 💾] Saving Product: "${productPayload.name}"`, 'color: #982476; font-weight: bold;');
+    console.log('Product Category:', productPayload.category);
+    console.log('Wholesale Sub-Type:', productPayload.wholesaleType);
+    console.log('Wholesale MOQ:', productPayload.wholesaleMinQty);
+    console.log('Target Region / Audience:', productPayload.targetRegion);
+    console.log('Full Payload:', productPayload);
+    if (productPayload.category === 'Wholesale' && productPayload.targetRegion === 'arab') {
+      console.warn(
+        `%c[AdminProductEditor ⚠️ NOTE] You are saving this Wholesale product with Target Audience = "Arab / UAE (AED)".\n` +
+        `It will ONLY be visible when users browse in AED (Arab region).\n` +
+        `Users browsing from India (INR) will NOT see it unless Target Audience is set to "Global / All Markets" with an INR price.`,
+        'background: #fff3cd; color: #856404; font-weight: bold; padding: 4px;'
+      );
+    }
+    console.groupEnd();
     try {
       await onSave(productPayload);
-      console.log('[AdminProductEditor] onSave completed successfully!');
+      console.log('%c[AdminProductEditor] ✅ onSave completed successfully!', 'color: #16a34a; font-weight: bold;');
     } catch (err) {
       console.error('[AdminProductEditor] Error during onSave:', err);
       setErrorMessage(err.message || 'Failed to save product listing.');

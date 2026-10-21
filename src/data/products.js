@@ -159,6 +159,14 @@ export function getAbayaSizeByLabel(label) {
   return ABAYA_SIZES.find((s) => s.label === label) || null;
 }
 
+function getAsset(path) {
+  if (!path) return '';
+  const rawBase = (typeof import.meta !== 'undefined' && import.meta.env?.BASE_URL) || '/';
+  const base = rawBase.endsWith('/') ? rawBase : `${rawBase}/`;
+  const clean = path.replace(/^\/+/, '');
+  return `${base}${clean}`;
+}
+
 export const PRODUCTS = [
   // ── 1. ABAYA CATEGORY PRODUCTS ──
   {
@@ -178,10 +186,10 @@ export const PRODUCTS = [
     defaultWork: "Handwork Abaya",
     styles: ABAYA_STYLES.map(s => s.name),
     works: ABAYA_WORKS.map(w => w.name),
-    image: "https://lh3.googleusercontent.com/aida-public/AB6AXuB1pd9NiCkfaDXafhb_-Uh3AA4XfN_AwnHEOOx0x2g2ngtcqCTGLjvTaBkKb-K-NzQCG24IEz1UecYCkOoBZQCz8Noq1fcMtAEZXyLpJZs8oZaOU9p5FhAShjG20FoGotY7Q5RtZ_fkUFk2HiRAkqY7a_y5R8pdolKPAtOtdjB3HFdhHKgY2Vfkv8U7Mfjej74-_slJxvP0a9gXoTwEPOLi7mSF52g0Nz5NZjvjyQzAgbD45y67GOUWkw",
+    image: getAsset("hero-images/hero_midnight_espresso_silk.jpg"),
     gallery: [
-      "https://lh3.googleusercontent.com/aida-public/AB6AXuB1pd9NiCkfaDXafhb_-Uh3AA4XfN_AwnHEOOx0x2g2ngtcqCTGLjvTaBkKb-K-NzQCG24IEz1UecYCkOoBZQCz8Noq1fcMtAEZXyLpJZs8oZaOU9p5FhAShjG20FoGotY7Q5RtZ_fkUFk2HiRAkqY7a_y5R8pdolKPAtOtdjB3HFdhHKgY2Vfkv8U7Mfjej74-_slJxvP0a9gXoTwEPOLi7mSF52g0Nz5NZjvjyQzAgbD45y67GOUWkw",
-      "https://lh3.googleusercontent.com/aida-public/AB6AXuCM9j8LFvsTmyHWo5yGhiGKS4opH62nBHZu4Lnul0WiG75kp7G1fV5dduJL4yYrG6_QYii5EqU5qDdmPAZiVayTHk_MHdZUS1PFH7Vmu_PQ9NkTiImB1yySXaGzznzAIt50MMuSleDfR4BGxIDRWpxTH8KdOc8n4QYbwkzpgvIpNykc3t2HhuojjULBjDgRwn0AHkSBSCprFC4hYTmO1dhYVgvdl_4PWcpnE9_BIc9Mbcupjf6jLWTvZA"
+      getAsset("hero-images/hero_midnight_espresso_silk.jpg"),
+      getAsset("collection-images/work_handwork.jpg")
     ],
     colors: [
       { name: "Midnight Espresso", hex: "#2E1C1A", imageIndex: 0 },
@@ -214,9 +222,10 @@ export const PRODUCTS = [
     defaultWork: "Stonework Abaya",
     styles: ABAYA_STYLES.map(s => s.name),
     works: ABAYA_WORKS.map(w => w.name),
-    image: "https://lh3.googleusercontent.com/aida-public/AB6AXuBYEamtzjpK7ME6SNcwB_Dm777cIG9hjrlL-HktMD3xXRRagPMwnPzQ6iQe0viQ-TzLh4QmpxHcu3NVanxe3hDnC2QRxOeS2lYJYUCj57wjk6s6zQPxuGfRymUJvAtpdqSxQyOCVxYVVXZeKjX1PtHzUwTdxLxRFkQ-uy0Wkdt9PLVSix-WW_Yhj9Q-7vckCUPA1NjfPSGWo1RpBTx4655Eg32yHhxICDT7wKDiG-eqw4hPAEADpyQ5vA",
+    image: getAsset("hero-images/hero_royal_amethyst_chiffon.jpg"),
     gallery: [
-      "https://lh3.googleusercontent.com/aida-public/AB6AXuBYEamtzjpK7ME6SNcwB_Dm777cIG9hjrlL-HktMD3xXRRagPMwnPzQ6iQe0viQ-TzLh4QmpxHcu3NVanxe3hDnC2QRxOeS2lYJYUCj57wjk6s6zQPxuGfRymUJvAtpdqSxQyOCVxYVVXZeKjX1PtHzUwTdxLxRFkQ-uy0Wkdt9PLVSix-WW_Yhj9Q-7vckCUPA1NjfPSGWo1RpBTx4655Eg32yHhxICDT7wKDiG-eqw4hPAEADpyQ5vA"
+      getAsset("hero-images/hero_royal_amethyst_chiffon.jpg"),
+      getAsset("collection-images/work_stonework.jpg")
     ],
     colors: [
       { name: "Royal Violet", hex: "#982476", imageIndex: 0 },
@@ -247,9 +256,10 @@ export const PRODUCTS = [
     defaultWork: "Embroidery Abaya",
     styles: ABAYA_STYLES.map(s => s.name),
     works: ABAYA_WORKS.map(w => w.name),
-    image: "https://lh3.googleusercontent.com/aida-public/AB6AXuAZVub0VhEbfZ42RjVHsOuVG7wBCgHLelkGY6dOel_gT0hCj9B2RVezHENmxJ_Y2puqMuVud0p4ezu2BAO-tDYec2p7u7R0BrlAnxqF8-sj5o6hzp952ZimvWdQMJ27T2bnI0izDnupYarV-4dSCuZNTV4ZI5LIGSBrB7x8UtRvKe2pzAHzOircRZsc5QdPR8BNHP9tTFY1_m7T5pjTpfYw7dLDbvqK7NRWpybaJqeALvz9q6tLOqfhTQ",
+    image: getAsset("collection-images/style_open_abaya.jpg"),
     gallery: [
-      "https://lh3.googleusercontent.com/aida-public/AB6AXuAZVub0VhEbfZ42RjVHsOuVG7wBCgHLelkGY6dOel_gT0hCj9B2RVezHENmxJ_Y2puqMuVud0p4ezu2BAO-tDYec2p7u7R0BrlAnxqF8-sj5o6hzp952ZimvWdQMJ27T2bnI0izDnupYarV-4dSCuZNTV4ZI5LIGSBrB7x8UtRvKe2pzAHzOircRZsc5QdPR8BNHP9tTFY1_m7T5pjTpfYw7dLDbvqK7NRWpybaJqeALvz9q6tLOqfhTQ"
+      getAsset("collection-images/style_open_abaya.jpg"),
+      getAsset("collection-images/work_lacework.jpg")
     ],
     colors: [
       { name: "Dusty Rose", hex: "#C49A99", imageIndex: 0 },
@@ -280,9 +290,10 @@ export const PRODUCTS = [
     defaultWork: "Threadwork Abaya",
     styles: ABAYA_STYLES.map(s => s.name),
     works: ABAYA_WORKS.map(w => w.name),
-    image: "https://lh3.googleusercontent.com/aida-public/AB6AXuD6VCCXcrsIQMHcP3Y2cwPwjMw26HSpdXZRpo1lY76HCdTo-vZ5b4M8do6PcZ7DqQvXu3-GlMe2pgswNgngMTx9SsTOZ72uI6VKzR9AO30LImVq-vABf8hOJGP7ROTu8ggWAFYVzo2IbWQV-aYchjycdwCWyhodCmGPBoTo_aAcIjMZuF8wfHjLz_fQt_sGTpPBO2Ddgqm5H07QGTDc4ZBfNS_nT9uyWZncjWeLoA1KPl20JxdlmW11w",
+    image: getAsset("hero-images/hero_austrian_modal_jersey.jpg"),
     gallery: [
-      "https://lh3.googleusercontent.com/aida-public/AB6AXuD6VCCXcrsIQMHcP3Y2cwPwjMw26HSpdXZRpo1lY76HCdTo-vZ5b4M8do6PcZ7DqQvXu3-GlMe2pgswNgngMTx9SsTOZ72uI6VKzR9AO30LImVq-vABf8hOJGP7ROTu8ggWAFYVzo2IbWQV-aYchjycdwCWyhodCmGPBoTo_aAcIjMZuF8wfHjLz_fQt_sGTpPBO2Ddgqm5H07QGTDc4ZBfNS_nT9uyWZncjWeLoA1KPl20JxdlmW11w"
+      getAsset("hero-images/hero_austrian_modal_jersey.jpg"),
+      getAsset("collection-images/style_kimono_kaftan.jpg")
     ],
     colors: [
       { name: "Serene Sage", hex: "#7D8B79", imageIndex: 0 },
@@ -313,9 +324,10 @@ export const PRODUCTS = [
     defaultWork: "Lace Work Abaya",
     styles: ABAYA_STYLES.map(s => s.name),
     works: ABAYA_WORKS.map(w => w.name),
-    image: "https://lh3.googleusercontent.com/aida-public/AB6AXuCnqkoPTiUDviPUgD5wOYrSVBgUqgYocEhMRfjaPR0AEGQLNSU0reQ8ubR7uxH960qrPF_FqZly7nHa6M1eLYxa5g-5swQgYvy9Z47DR5Ph3pItsJjdCgLs1rkJOUsw_YtUrEPMsYWIosdqamteTBxBFcTP3dxNNOMXvIUzzwnK72cUnoROgWljIfcYMCZlhKDCFJZAJAexcU4FPc2ghiwZ4a4GWa-zXbuRhhx6hDiAwUFdTToqcj62cg",
+    image: getAsset("collection-images/style_two_piece.jpg"),
     gallery: [
-      "https://lh3.googleusercontent.com/aida-public/AB6AXuCnqkoPTiUDviPUgD5wOYrSVBgUqgYocEhMRfjaPR0AEGQLNSU0reQ8ubR7uxH960qrPF_FqZly7nHa6M1eLYxa5g-5swQgYvy9Z47DR5Ph3pItsJjdCgLs1rkJOUsw_YtUrEPMsYWIosdqamteTBxBFcTP3dxNNOMXvIUzzwnK72cUnoROgWljIfcYMCZlhKDCFJZAJAexcU4FPc2ghiwZ4a4GWa-zXbuRhhx6hDiAwUFdTToqcj62cg"
+      getAsset("collection-images/style_two_piece.jpg"),
+      getAsset("collection-images/style_umbrella_flare.jpg")
     ],
     colors: [
       { name: "Ivory Pearl", hex: "#FBF6EE", imageIndex: 0 },
@@ -346,9 +358,10 @@ export const PRODUCTS = [
     defaultWork: "Printed Abaya",
     styles: ABAYA_STYLES.map(s => s.name),
     works: ABAYA_WORKS.map(w => w.name),
-    image: "https://lh3.googleusercontent.com/aida-public/AB6AXuCaxkyIqLmyOOOYWe4t17RXa7iRSCynbDrN6ywtJPf_xfaZiQGiTrejAu_Y_jqoa5NK9NtZTqNASt0n7GYiMTOvuZi_xPbW_YEfybM1GEZ94_QdPMo5CXKUwTJqQtTsaGYducUj0ebdjb6CCa_VJ7nazh54quuGFSOALMq9e9LVwMVGfLN3NthKYvgJjKK8pxisrSBk20C56m3SqGRkW9HmYuXUcCRYBR5w0nTDqakaeh2oYXKWKIq1UA",
+    image: getAsset("collection-images/work_threadwork.jpg"),
     gallery: [
-      "https://lh3.googleusercontent.com/aida-public/AB6AXuCaxkyIqLmyOOOYWe4t17RXa7iRSCynbDrN6ywtJPf_xfaZiQGiTrejAu_Y_jqoa5NK9NtZTqNASt0n7GYiMTOvuZi_xPbW_YEfybM1GEZ94_QdPMo5CXKUwTJqQtTsaGYducUj0ebdjb6CCa_VJ7nazh54quuGFSOALMq9e9LVwMVGfLN3NthKYvgJjKK8pxisrSBk20C56m3SqGRkW9HmYuXUcCRYBR5w0nTDqakaeh2oYXKWKIq1UA"
+      getAsset("collection-images/work_threadwork.jpg"),
+      getAsset("collection-images/style_closed_cut.jpg")
     ],
     colors: [
       { name: "Lavender Mist", hex: "#D4C5DD", imageIndex: 0 },
@@ -379,9 +392,10 @@ export const PRODUCTS = [
     defaultWork: "Plain/Basic",
     styles: ABAYA_STYLES.map(s => s.name),
     works: ABAYA_WORKS.map(w => w.name),
-    image: "https://lh3.googleusercontent.com/aida-public/AB6AXuC62Pubod6uVtguy05UptSBB8reu4JabPY0PwbiPYPXlEDpfoyvWWm_LbQNVVa2vA_XcMhrFIIBFxe-w0OoW5jrkDOfsMuBpdvFb1KE8yOvQP3elB3A6xfTzLB8rTL6U3551DMCeA9q2oMYmOIJbZpUDr1DlrwerOph-ZxGnsRCoO8TEijtBJqZUIeWwRen9k_MtD_Br7xdakBcNQjnRMRcXfgOBFn60si3c_yt84p0f1dKFD9kqRq06g",
+    image: getAsset("collection-images/work_stonework.jpg"),
     gallery: [
-      "https://lh3.googleusercontent.com/aida-public/AB6AXuC62Pubod6uVtguy05UptSBB8reu4JabPY0PwbiPYPXlEDpfoyvWWm_LbQNVVa2vA_XcMhrFIIBFxe-w0OoW5jrkDOfsMuBpdvFb1KE8yOvQP3elB3A6xfTzLB8rTL6U3551DMCeA9q2oMYmOIJbZpUDr1DlrwerOph-ZxGnsRCoO8TEijtBJqZUIeWwRen9k_MtD_Br7xdakBcNQjnRMRcXfgOBFn60si3c_yt84p0f1dKFD9kqRq06g"
+      getAsset("collection-images/work_stonework.jpg"),
+      getAsset("collection-images/style_butterfly_farasha.jpg")
     ],
     colors: [
       { name: "Amethyst Soft", hex: "#C76AA9", imageIndex: 0 },
@@ -412,9 +426,9 @@ export const PRODUCTS = [
     defaultWork: "Others",
     styles: ABAYA_STYLES.map(s => s.name),
     works: ABAYA_WORKS.map(w => w.name),
-    image: "/collection-images/work_others.jpg",
+    image: getAsset("collection-images/work_others.jpg"),
     gallery: [
-      "/collection-images/work_others.jpg"
+      getAsset("collection-images/work_others.jpg")
     ],
     colors: [
       { name: "Midnight Espresso", hex: "#2E1C1A", imageIndex: 0 },
@@ -445,9 +459,10 @@ export const PRODUCTS = [
     isVioletEdition: true,
     styles: [],
     works: [],
-    image: "https://lh3.googleusercontent.com/aida-public/AB6AXuD-Sf1dgvSxQEdIcuInSxcRUwW6B-nBrZnNrAlOjxmNSTXEgqHvgbTWfGWkg5QYKVY0d9lsnGmuQwBuPf3yXH71nFMwMaVjxwvCixfo4u7HOgAOx-Z-drovy_YH-5MOgACvt0Pwe1icr3mK9M_bxXtmzzaUPFW_vyPfmx1GGDVrW_F2AgYUY40fBuNWPQElc5LbqXQuB_wLdkClmmrvrK6lHW6RI2zefAzNng6DUsYCen2Ggb06fdIVoA",
+    image: getAsset("collection-images/work_plain.jpg"),
     gallery: [
-      "https://lh3.googleusercontent.com/aida-public/AB6AXuD-Sf1dgvSxQEdIcuInSxcRUwW6B-nBrZnNrAlOjxmNSTXEgqHvgbTWfGWkg5QYKVY0d9lsnGmuQwBuPf3yXH71nFMwMaVjxwvCixfo4u7HOgAOx-Z-drovy_YH-5MOgACvt0Pwe1icr3mK9M_bxXtmzzaUPFW_vyPfmx1GGDVrW_F2AgYUY40fBuNWPQElc5LbqXQuB_wLdkClmmrvrK6lHW6RI2zefAzNng6DUsYCen2Ggb06fdIVoA"
+      getAsset("collection-images/work_plain.jpg"),
+      getAsset("hero-images/hero_midnight_espresso_silk.jpg")
     ],
     colors: [
       { name: "Midnight Espresso", hex: "#2E1C1A", imageIndex: 0 },
@@ -477,9 +492,10 @@ export const PRODUCTS = [
     isVioletEdition: false,
     styles: [],
     works: [],
-    image: "https://lh3.googleusercontent.com/aida-public/AB6AXuAZVub0VhEbfZ42RjVHsOuVG7wBCgHLelkGY6dOel_gT0hCj9B2RVezHENmxJ_Y2puqMuVud0p4ezu2BAO-tDYec2p7u7R0BrlAnxqF8-sj5o6hzp952ZimvWdQMJ27T2bnI0izDnupYarV-4dSCuZNTV4ZI5LIGSBrB7x8UtRvKe2pzAHzOircRZsc5QdPR8BNHP9tTFY1_m7T5pjTpfYw7dLDbvqK7NRWpybaJqeALvz9q6tLOqfhTQ",
+    image: getAsset("collection-images/work_lacework.jpg"),
     gallery: [
-      "https://lh3.googleusercontent.com/aida-public/AB6AXuAZVub0VhEbfZ42RjVHsOuVG7wBCgHLelkGY6dOel_gT0hCj9B2RVezHENmxJ_Y2puqMuVud0p4ezu2BAO-tDYec2p7u7R0BrlAnxqF8-sj5o6hzp952ZimvWdQMJ27T2bnI0izDnupYarV-4dSCuZNTV4ZI5LIGSBrB7x8UtRvKe2pzAHzOircRZsc5QdPR8BNHP9tTFY1_m7T5pjTpfYw7dLDbvqK7NRWpybaJqeALvz9q6tLOqfhTQ"
+      getAsset("collection-images/work_lacework.jpg"),
+      getAsset("collection-images/work_printed.jpg")
     ],
     colors: [
       { name: "Dusty Rose", hex: "#C49A99", imageIndex: 0 },
@@ -511,9 +527,10 @@ export const PRODUCTS = [
     isVioletEdition: false,
     styles: [],
     works: [],
-    image: "https://lh3.googleusercontent.com/aida-public/AB6AXuB1pd9NiCkfaDXafhb_-Uh3AA4XfN_AwnHEOOx0x2g2ngtcqCTGLjvTaBkKb-K-NzQCG24IEz1UecYCkOoBZQCz8Noq1fcMtAEZXyLpJZs8oZaOU9p5FhAShjG20FoGotY7Q5RtZ_fkUFk2HiRAkqY7a_y5R8pdolKPAtOtdjB3HFdhHKgY2Vfkv8U7Mfjej74-_slJxvP0a9gXoTwEPOLi7mSF52g0Nz5NZjvjyQzAgbD45y67GOUWkw",
+    image: getAsset("collection-images/style_closed_cut.jpg"),
     gallery: [
-      "https://lh3.googleusercontent.com/aida-public/AB6AXuB1pd9NiCkfaDXafhb_-Uh3AA4XfN_AwnHEOOx0x2g2ngtcqCTGLjvTaBkKb-K-NzQCG24IEz1UecYCkOoBZQCz8Noq1fcMtAEZXyLpJZs8oZaOU9p5FhAShjG20FoGotY7Q5RtZ_fkUFk2HiRAkqY7a_y5R8pdolKPAtOtdjB3HFdhHKgY2Vfkv8U7Mfjej74-_slJxvP0a9gXoTwEPOLi7mSF52g0Nz5NZjvjyQzAgbD45y67GOUWkw"
+      getAsset("collection-images/style_closed_cut.jpg"),
+      getAsset("collection-images/work_plain.jpg")
     ],
     colors: [
       { name: "Pure Onyx Black", hex: "#111111", imageIndex: 0 },
@@ -542,9 +559,10 @@ export const PRODUCTS = [
     isVioletEdition: false,
     styles: [],
     works: [],
-    image: "https://lh3.googleusercontent.com/aida-public/AB6AXuD6VCCXcrsIQMHcP3Y2cwPwjMw26HSpdXZRpo1lY76HCdTo-vZ5b4M8do6PcZ7DqQvXu3-GlMe2pgswNgngMTx9SsTOZ72uI6VKzR9AO30LImVq-vABf8hOJGP7ROTu8ggWAFYVzo2IbWQV-aYchjycdwCWyhodCmGPBoTo_aAcIjMZuF8wfHjLz_fQt_sGTpPBO2Ddgqm5H07QGTDc4ZBfNS_nT9uyWZncjWeLoA1KPl20JxdlmW11w",
+    image: getAsset("collection-images/work_plain.jpg"),
     gallery: [
-      "https://lh3.googleusercontent.com/aida-public/AB6AXuD6VCCXcrsIQMHcP3Y2cwPwjMw26HSpdXZRpo1lY76HCdTo-vZ5b4M8do6PcZ7DqQvXu3-GlMe2pgswNgngMTx9SsTOZ72uI6VKzR9AO30LImVq-vABf8hOJGP7ROTu8ggWAFYVzo2IbWQV-aYchjycdwCWyhodCmGPBoTo_aAcIjMZuF8wfHjLz_fQt_sGTpPBO2Ddgqm5H07QGTDc4ZBfNS_nT9uyWZncjWeLoA1KPl20JxdlmW11w"
+      getAsset("collection-images/work_plain.jpg"),
+      getAsset("collection-images/work_others.jpg")
     ],
     colors: [
       { name: "Onyx Black", hex: "#111111", imageIndex: 0 },
@@ -576,9 +594,10 @@ export const PRODUCTS = [
     isVioletEdition: false,
     styles: [],
     works: [],
-    image: "https://lh3.googleusercontent.com/aida-public/AB6AXuCnqkoPTiUDviPUgD5wOYrSVBgUqgYocEhMRfjaPR0AEGQLNSU0reQ8ubR7uxH960qrPF_FqZly7nHa6M1eLYxa5g-5swQgYvy9Z47DR5Ph3pItsJjdCgLs1rkJOUsw_YtUrEPMsYWIosdqamteTBxBFcTP3dxNNOMXvIUzzwnK72cUnoROgWljIfcYMCZlhKDCFJZAJAexcU4FPc2ghiwZ4a4GWa-zXbuRhhx6hDiAwUFdTToqcj62cg",
+    image: getAsset("collection-images/style_two_piece.jpg"),
     gallery: [
-      "https://lh3.googleusercontent.com/aida-public/AB6AXuCnqkoPTiUDviPUgD5wOYrSVBgUqgYocEhMRfjaPR0AEGQLNSU0reQ8ubR7uxH960qrPF_FqZly7nHa6M1eLYxa5g-5swQgYvy9Z47DR5Ph3pItsJjdCgLs1rkJOUsw_YtUrEPMsYWIosdqamteTBxBFcTP3dxNNOMXvIUzzwnK72cUnoROgWljIfcYMCZlhKDCFJZAJAexcU4FPc2ghiwZ4a4GWa-zXbuRhhx6hDiAwUFdTToqcj62cg"
+      getAsset("collection-images/style_two_piece.jpg"),
+      getAsset("collection-images/style_open_abaya.jpg")
     ],
     colors: [
       { name: "Ivory Pearl", hex: "#FBF6EE", imageIndex: 0 },
@@ -608,9 +627,10 @@ export const PRODUCTS = [
     isVioletEdition: false,
     styles: [],
     works: [],
-    image: "https://lh3.googleusercontent.com/aida-public/AB6AXuDkdZL0iJiKpH_RGkCIR3KLu-FRwu0VNrwd0AKjbEC4LKeHX81c_gdKTa-2u50NIw6c-dk9UQ8TRmm6yQbZjQgiuwIUEEBUp9SCT7pU4TIddCWVvd0w4wOIz4ajtmoc3h3NpKqeI5t9diUWGGVfWCntFu7hYs6yRdpT2QuyTJlISHeDi11u6Nxth4Z0XBlgtoUTQyhGy2lgNyNAECYG-szSx1NYT-9CsllGhOybxhSgFYV5PtfVnL0aWA",
+    image: getAsset("collection-images/style_umbrella_flare.jpg"),
     gallery: [
-      "https://lh3.googleusercontent.com/aida-public/AB6AXuDkdZL0iJiKpH_RGkCIR3KLu-FRwu0VNrwd0AKjbEC4LKeHX81c_gdKTa-2u50NIw6c-dk9UQ8TRmm6yQbZjQgiuwIUEEBUp9SCT7pU4TIddCWVvd0w4wOIz4ajtmoc3h3NpKqeI5t9diUWGGVfWCntFu7hYs6yRdpT2QuyTJlISHeDi11u6Nxth4Z0XBlgtoUTQyhGy2lgNyNAECYG-szSx1NYT-9CsllGhOybxhSgFYV5PtfVnL0aWA"
+      getAsset("collection-images/style_umbrella_flare.jpg"),
+      getAsset("collection-images/work_plain.jpg")
     ],
     colors: [
       { name: "Serene Sage", hex: "#7D8B79", imageIndex: 0 },
@@ -642,9 +662,10 @@ export const PRODUCTS = [
     isVioletEdition: true,
     styles: [],
     works: [],
-    image: "https://lh3.googleusercontent.com/aida-public/AB6AXuBYEamtzjpK7ME6SNcwB_Dm777cIG9hjrlL-HktMD3xXRRagPMwnPzQ6iQe0viQ-TzLh4QmpxHcu3NVanxe3hDnC2QRxOeS2lYJYUCj57wjk6s6zQPxuGfRymUJvAtpdqSxQyOCVxYVVXZeKjX1PtHzUwTdxLxRFkQ-uy0Wkdt9PLVSix-WW_Yhj9Q-7vckCUPA1NjfPSGWo1RpBTx4655Eg32yHhxICDT7wKDiG-eqw4hPAEADpyQ5vA",
+    image: getAsset("collection-images/style_butterfly_farasha.jpg"),
     gallery: [
-      "https://lh3.googleusercontent.com/aida-public/AB6AXuBYEamtzjpK7ME6SNcwB_Dm777cIG9hjrlL-HktMD3xXRRagPMwnPzQ6iQe0viQ-TzLh4QmpxHcu3NVanxe3hDnC2QRxOeS2lYJYUCj57wjk6s6zQPxuGfRymUJvAtpdqSxQyOCVxYVVXZeKjX1PtHzUwTdxLxRFkQ-uy0Wkdt9PLVSix-WW_Yhj9Q-7vckCUPA1NjfPSGWo1RpBTx4655Eg32yHhxICDT7wKDiG-eqw4hPAEADpyQ5vA"
+      getAsset("collection-images/style_butterfly_farasha.jpg"),
+      getAsset("collection-images/work_embroidery.jpg")
     ],
     colors: [
       { name: "Royal Violet", hex: "#982476", imageIndex: 0 },
@@ -678,9 +699,10 @@ export const PRODUCTS = [
     isVioletEdition: false,
     styles: [],
     works: [],
-    image: "https://lh3.googleusercontent.com/aida-public/AB6AXuDkdZL0iJiKpH_RGkCIR3KLu-FRwu0VNrwd0AKjbEC4LKeHX81c_gdKTa-2u50NIw6c-dk9UQ8TRmm6yQbZjQgiuwIUEEBUp9SCT7pU4TIddCWVvd0w4wOIz4ajtmoc3h3NpKqeI5t9diUWGGVfWCntFu7hYs6yRdpT2QuyTJlISHeDi11u6Nxth4Z0XBlgtoUTQyhGy2lgNyNAECYG-szSx1NYT-9CsllGhOybxhSgFYV5PtfVnL0aWA",
+    image: getAsset("collection-images/work_plain.jpg"),
     gallery: [
-      "https://lh3.googleusercontent.com/aida-public/AB6AXuDkdZL0iJiKpH_RGkCIR3KLu-FRwu0VNrwd0AKjbEC4LKeHX81c_gdKTa-2u50NIw6c-dk9UQ8TRmm6yQbZjQgiuwIUEEBUp9SCT7pU4TIddCWVvd0w4wOIz4ajtmoc3h3NpKqeI5t9diUWGGVfWCntFu7hYs6yRdpT2QuyTJlISHeDi11u6Nxth4Z0XBlgtoUTQyhGy2lgNyNAECYG-szSx1NYT-9CsllGhOybxhSgFYV5PtfVnL0aWA"
+      getAsset("collection-images/work_plain.jpg"),
+      getAsset("collection-images/style_open_abaya.jpg")
     ],
     colors: [
       { name: "Assorted Core Neutrals (Black, Espresso, Sage, Rose)", hex: "#111111", imageIndex: 0 }
@@ -710,9 +732,10 @@ export const PRODUCTS = [
     isVioletEdition: true,
     styles: [],
     works: [],
-    image: "https://lh3.googleusercontent.com/aida-public/AB6AXuBwpGHDV5eQMWi71D4mWI7voUd6mXcXo_PTliCl6CQhvIaRrMlarXpn-r-525bSjOEkrsbyu3U7zZ3JfTBvpB1PziSsHKFHFWb1xFFEQtM58gz89WscIgS3NH2jdY_eFZxTxxxrRFRGKiDDZH_8lWjYSE3li5ix01zdBOA6n6y2CzPMacxyx_52_efpx2AoC7zECpL3lIaGkhpz1fdqaUX_xVKePZtVBnB94cljTFvCuTw-g707mRks_g",
+    image: getAsset("collection-images/work_embroidery.jpg"),
     gallery: [
-      "https://lh3.googleusercontent.com/aida-public/AB6AXuBwpGHDV5eQMWi71D4mWI7voUd6mXcXo_PTliCl6CQhvIaRrMlarXpn-r-525bSjOEkrsbyu3U7zZ3JfTBvpB1PziSsHKFHFWb1xFFEQtM58gz89WscIgS3NH2jdY_eFZxTxxxrRFRGKiDDZH_8lWjYSE3li5ix01zdBOA6n6y2CzPMacxyx_52_efpx2AoC7zECpL3lIaGkhpz1fdqaUX_xVKePZtVBnB94cljTFvCuTw-g707mRks_g"
+      getAsset("collection-images/work_embroidery.jpg"),
+      getAsset("collection-images/work_handwork.jpg")
     ],
     colors: [
       { name: "Atelier Palette (Espresso, Violet, Amethyst, Ivory)", hex: "#982476", imageIndex: 0 }
@@ -742,9 +765,10 @@ export const PRODUCTS = [
     isVioletEdition: false,
     styles: [],
     works: [],
-    image: "https://lh3.googleusercontent.com/aida-public/AB6AXuBYEamtzjpK7ME6SNcwB_Dm777cIG9hjrlL-HktMD3xXRRagPMwnPzQ6iQe0viQ-TzLh4QmpxHcu3NVanxe3hDnC2QRxOeS2lYJYUCj57wjk6s6zQPxuGfRymUJvAtpdqSxQyOCVxYVVXZeKjX1PtHzUwTdxLxRFkQ-uy0Wkdt9PLVSix-WW_Yhj9Q-7vckCUPA1NjfPSGWo1RpBTx4655Eg32yHhxICDT7wKDiG-eqw4hPAEADpyQ5vA",
+    image: getAsset("collection-images/style_butterfly_farasha.jpg"),
     gallery: [
-      "https://lh3.googleusercontent.com/aida-public/AB6AXuBYEamtzjpK7ME6SNcwB_Dm777cIG9hjrlL-HktMD3xXRRagPMwnPzQ6iQe0viQ-TzLh4QmpxHcu3NVanxe3hDnC2QRxOeS2lYJYUCj57wjk6s6zQPxuGfRymUJvAtpdqSxQyOCVxYVVXZeKjX1PtHzUwTdxLxRFkQ-uy0Wkdt9PLVSix-WW_Yhj9Q-7vckCUPA1NjfPSGWo1RpBTx4655Eg32yHhxICDT7wKDiG-eqw4hPAEADpyQ5vA"
+      getAsset("collection-images/style_butterfly_farasha.jpg"),
+      getAsset("collection-images/work_stonework.jpg")
     ],
     colors: [
       { name: "Pastel & Jewel Mix (Violet, Amethyst, Rose, Black)", hex: "#C76AA9", imageIndex: 0 }
@@ -764,7 +788,7 @@ export const COLLECTIONS = [
     id: "everyday-essentials",
     name: "Everyday Abaya Essentials",
     description: "Breathable open and closed cut silhouettes designed for effortless all-day wear.",
-    image: "https://lh3.googleusercontent.com/aida-public/AB6AXuDkdZL0iJiKpH_RGkCIR3KLu-FRwu0VNrwd0AKjbEC4LKeHX81c_gdKTa-2u50NIw6c-dk9UQ8TRmm6yQbZjQgiuwIUEEBUp9SCT7pU4TIddCWVvd0w4wOIz4ajtmoc3h3NpKqeI5t9diUWGGVfWCntFu7hYs6yRdpT2QuyTJlISHeDi11u6Nxth4Z0XBlgtoUTQyhGy2lgNyNAECYG-szSx1NYT-9CsllGhOybxhSgFYV5PtfVnL0aWA",
+    image: getAsset("collection-images/style_open_abaya.jpg"),
     styleFilter: "Open abaya",
     itemCount: "18 Styles"
   },
@@ -772,7 +796,7 @@ export const COLLECTIONS = [
     id: "pure-silk-atelier",
     name: "Pure Mulberry Silk Atelier",
     description: "Artisanal sweeping butterfly and kimono silhouettes in rich espresso and delicate amethyst hues.",
-    image: "https://lh3.googleusercontent.com/aida-public/AB6AXuD-Sf1dgvSxQEdIcuInSxcRUwW6B-nBrZnNrAlOjxmNSTXEgqHvgbTWfGWkg5QYKVY0d9lsnGmuQwBuPf3yXH71nFMwMaVjxwvCixfo4u7HOgAOx-Z-drovy_YH-5MOgACvt0Pwe1icr3mK9M_bxXtmzzaUPFW_vyPfmx1GGDVrW_F2AgYUY40fBuNWPQElc5LbqXQuB_wLdkClmmrvrK6lHW6RI2zefAzNng6DUsYCen2Ggb06fdIVoA",
+    image: getAsset("hero-images/hero_midnight_espresso_silk.jpg"),
     styleFilter: "Butterfly or farasha",
     itemCount: "12 Styles"
   },
@@ -780,7 +804,7 @@ export const COLLECTIONS = [
     id: "bridal-atelier",
     name: "Occasion & 2-Piece Atelier",
     description: "High-twist elegant cuts with delicate stonework, embroidery, and bespoke handwork.",
-    image: "https://lh3.googleusercontent.com/aida-public/AB6AXuBwpGHDV5eQMWi71D4mWI7voUd6mXcXo_PTliCl6CQhvIaRrMlarXpn-r-525bSjOEkrsbyu3U7zZ3JfTBvpB1PziSsHKFHFWb1xFFEQtM58gz89WscIgS3NH2jdY_eFZxTxxxrRFRGKiDDZH_8lWjYSE3li5ix01zdBOA6n6y2CzPMacxyx_52_efpx2AoC7zECpL3lIaGkhpz1fdqaUX_xVKePZtVBnB94cljTFvCuTw-g707mRks_g",
+    image: getAsset("collection-images/style_two_piece.jpg"),
     styleFilter: "2 piece abaya (with inner)",
     itemCount: "8 Styles"
   }
