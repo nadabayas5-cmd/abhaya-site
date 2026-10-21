@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useMemo } from 'react';
 import { createPortal } from 'react-dom';
 import { useParams } from 'react-router-dom';
 import {
@@ -262,6 +262,7 @@ export default function ProductDetailPage() {
 
   const productColor = product.color?.trim() || product.colors?.[0]?.name || '';
   const currentColor = product.colors?.[0] || (productColor ? { name: productColor, hex: '#1C1C1C' } : { name: 'Standard', hex: '#1C1C1C' });
+  const images = product.gallery && product.gallery.length > 0 ? product.gallery : [product.image];
   const isWholesaleProduct = (product.category || '').toLowerCase().includes('wholesale');
   const relatedProducts = useMemo(() => {
     const isWholesale = (product.category || '').toLowerCase().includes('wholesale');
