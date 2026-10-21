@@ -97,8 +97,9 @@ export default function Navbar() {
     const list = [...WHOLESALE_TYPES];
     if (Array.isArray(PRODUCTS)) {
       PRODUCTS.forEach(p => {
-        if (p.wholesaleType && !list.some(wt => (wt.name || wt).toLowerCase() === p.wholesaleType.toLowerCase())) {
-          list.push({ id: p.wholesaleType.toLowerCase().replace(/\s+/g, '-'), name: p.wholesaleType });
+        const type = (p.wholesaleType || '').toLowerCase() === 'abaya' ? 'Others' : p.wholesaleType;
+        if (type && !list.some(wt => (wt.name || wt).toLowerCase() === type.toLowerCase())) {
+          list.push({ id: type.toLowerCase().replace(/\s+/g, '-'), name: type });
         }
       });
     }

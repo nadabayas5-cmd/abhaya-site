@@ -333,6 +333,7 @@ export default function ShopPage() {
         const wtLower = selectedWholesaleType.toLowerCase();
         const matchesWt =
           (product.wholesaleType && product.wholesaleType.toLowerCase() === wtLower) ||
+          (wtLower === 'others' && product.wholesaleType && product.wholesaleType.toLowerCase() === 'abaya') ||
           (product.name && product.name.toLowerCase().includes(wtLower));
         if (!matchesWt) return false;
       }
@@ -380,12 +381,12 @@ export default function ShopPage() {
       return 0; // featured default
     });
 
-    // Detailed Wholesale Abaya diagnostic audits
+    // Detailed Wholesale Others diagnostic audits
     const wholesaleInDb = (allProducts || []).filter(p => (p.category || '').toLowerCase().includes('wholesale'));
-    const wholesaleAbayaInDb = wholesaleInDb.filter(p => (p.wholesaleType || '').toLowerCase() === 'abaya');
+    const wholesaleOthersInDb = wholesaleInDb.filter(p => ['abaya', 'others'].includes((p.wholesaleType || '').toLowerCase()));
     const wholesaleInCatalog = PRODUCTS.filter(p => (p.category || '').toLowerCase().includes('wholesale'));
-    const wholesaleAbayaInCatalog = wholesaleInCatalog.filter(p => (p.wholesaleType || '').toLowerCase() === 'abaya');
-    const wholesaleAbayaInResults = result.filter(p => (p.category || '').toLowerCase().includes('wholesale') && (p.wholesaleType || '').toLowerCase() === 'abaya');
+    const wholesaleOthersInCatalog = wholesaleInCatalog.filter(p => ['abaya', 'others'].includes((p.wholesaleType || '').toLowerCase()));
+    const wholesaleOthersInResults = result.filter(p => (p.category || '').toLowerCase().includes('wholesale') && ['abaya', 'others'].includes((p.wholesaleType || '').toLowerCase()));
 
     console.group(`%c[ShopPage 🛍️ Filter Diagnostics] ${result.length} of ${PRODUCTS.length} visible products shown`, 'color: #7A0648; font-weight: bold;');
     console.log('Active Filters:', {
@@ -400,24 +401,24 @@ export default function ShopPage() {
       sortBy
     });
     console.log(`Wholesale Summary: ${wholesaleInDb.length} in DB | ${wholesaleInCatalog.length} in region "${activeRegion}" | ${result.filter(p => (p.category || '').toLowerCase().includes('wholesale')).length} in current view`);
-    console.log(`Wholesale "Abaya" Summary: ${wholesaleAbayaInDb.length} in DB | ${wholesaleAbayaInCatalog.length} in region "${activeRegion}" | ${wholesaleAbayaInResults.length} in current view`);
+    console.log(`Wholesale "Others" Summary: ${wholesaleOthersInDb.length} in DB | ${wholesaleOthersInCatalog.length} in region "${activeRegion}" | ${wholesaleOthersInResults.length} in current view`);
 
-    if (wholesaleAbayaInDb.length > 0 && wholesaleAbayaInCatalog.length === 0) {
+    if (wholesaleOthersInDb.length > 0 && wholesaleOthersInCatalog.length === 0) {
       console.warn(
-        `%c[ShopPage ⚠️ REGION MISMATCH] ${wholesaleAbayaInDb.length} "Wholesale Abaya" products exist in the database, but 0 are in the visible catalog for your market (${activeRegion} / ${currency})!\n` +
+        `%c[ShopPage ⚠️ REGION MISMATCH] ${wholesaleOthersInDb.length} "Wholesale Others" products exist in the database, but 0 are in the visible catalog for your market (${activeRegion} / ${currency})!\n` +
         `• Reason: They have targetRegion='arab'. Products with targetRegion='arab' only show when currency is AED.\n` +
         `• Switch to AED via the currency selector (or set targetRegion='all' in Admin) to see them!`,
         'background: #fff3cd; color: #856404; font-weight: bold; padding: 4px;'
       );
-    } else if (wholesaleAbayaInCatalog.length > 0 && wholesaleAbayaInResults.length === 0) {
+    } else if (wholesaleOthersInCatalog.length > 0 && wholesaleOthersInResults.length === 0) {
       console.warn(
-        `%c[ShopPage ⚠️ FILTER EXCLUSION] ${wholesaleAbayaInCatalog.length} "Wholesale Abaya" products are visible in this market, but they are filtered out by current ShopPage filters!\n` +
+        `%c[ShopPage ⚠️ FILTER EXCLUSION] ${wholesaleOthersInCatalog.length} "Wholesale Others" products are visible in this market, but they are filtered out by current ShopPage filters!\n` +
         `• Current category: "${selectedCategory}" | Wholesale Type: "${selectedWholesaleType}".\n` +
-        `• To show them, click the "Wholesale (B2B)" category tab, then click the "Abaya" subtype button (or "All Wholesale").`,
+        `• To show them, click the "Wholesale (B2B)" category tab, then click the "Others" subtype button (or "All Wholesale").`,
         'background: #ffebee; color: #c62828; font-weight: bold; padding: 4px;'
       );
-    } else if (wholesaleAbayaInResults.length > 0) {
-      console.log(`%c[ShopPage ✅] Displaying ${wholesaleAbayaInResults.length} Wholesale Abaya products:`, 'color: #16a34a; font-weight: bold;', wholesaleAbayaInResults);
+    } else if (wholesaleOthersInResults.length > 0) {
+      console.log(`%c[ShopPage ✅] Displaying ${wholesaleOthersInResults.length} Wholesale Others products:`, 'color: #16a34a; font-weight: bold;', wholesaleOthersInResults);
     }
     console.groupEnd();
 

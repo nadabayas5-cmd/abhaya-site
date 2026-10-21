@@ -104,12 +104,12 @@ export const ABAYA_WORKS = [
 ];
 
 export const WHOLESALE_TYPES = [
-  { id: "Abaya", name: "Abaya", description: "Full wholesale cartons of assorted luxury abayas" },
   { id: "Simple/Basic", name: "Simple/Basic", description: "High-demand everyday minimalist abayas for retail shops" },
   { id: "Embroidery", name: "Embroidery", description: "Bespoke embroidered abaya cartons for boutiques" },
   { id: "Handwork", name: "Handwork", description: "Haute couture hand-beaded bridal & party abaya stock" },
   { id: "Lace", name: "Lace", description: "French & Chantilly lace detailed abaya sets" },
-  { id: "Kids", name: "Kids", description: "Assorted girls and junior modest abaya carton packs" }
+  { id: "Kids", name: "Kids", description: "Assorted girls and junior modest abaya carton packs" },
+  { id: "Others", name: "Others", description: "Full wholesale cartons of assorted luxury abayas and other custom items" }
 ];
 
 export const ABAYA_SIZES = [

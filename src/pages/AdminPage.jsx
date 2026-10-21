@@ -209,9 +209,9 @@ export default function AdminPage() {
     });
 
     const wholesaleInDb = baseProducts.filter(p => (p.category || '').toLowerCase().includes('wholesale'));
-    const wholesaleAbayaInDb = wholesaleInDb.filter(p => (p.wholesaleType || '').toLowerCase() === 'abaya');
+    const wholesaleOthersInDb = wholesaleInDb.filter(p => ['abaya', 'others'].includes((p.wholesaleType || '').toLowerCase()));
     const wholesaleInFiltered = list.filter(p => (p.category || '').toLowerCase().includes('wholesale'));
-    const wholesaleAbayaInFiltered = list.filter(p => (p.category || '').toLowerCase().includes('wholesale') && (p.wholesaleType || '').toLowerCase() === 'abaya');
+    const wholesaleOthersInFiltered = list.filter(p => (p.category || '').toLowerCase().includes('wholesale') && ['abaya', 'others'].includes((p.wholesaleType || '').toLowerCase()));
 
     console.group(`%c[AdminPage ⚙️ Filter Diagnostics] ${list.length} of ${baseProducts.length} products displayed`, 'color: #7A0648; font-weight: bold;');
     console.log('Active Admin Filters:', {
@@ -222,7 +222,7 @@ export default function AdminPage() {
       stock: stockFilter,
       search: searchQuery || '(none)'
     });
-    console.log(`Wholesale in Admin: ${wholesaleInDb.length} in DB (Abayas: ${wholesaleAbayaInDb.length}) => ${wholesaleInFiltered.length} matching active filters (Abayas: ${wholesaleAbayaInFiltered.length})`);
+    console.log(`Wholesale in Admin: ${wholesaleInDb.length} in DB (Others: ${wholesaleOthersInDb.length}) => ${wholesaleInFiltered.length} matching active filters (Others: ${wholesaleOthersInFiltered.length})`);
     console.groupEnd();
 
     return list;

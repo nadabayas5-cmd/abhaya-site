@@ -166,8 +166,9 @@ export default function CollectionsPage() {
   const dynamicWholesaleTypes = useMemo(() => {
     const list = [...WHOLESALE_TYPES.map(wt => wt.name || wt)];
     PRODUCTS.forEach(p => {
-      if (p.wholesaleType && !list.some(wt => wt.toLowerCase() === p.wholesaleType.toLowerCase())) {
-        list.push(p.wholesaleType);
+      const type = (p.wholesaleType || '').toLowerCase() === 'abaya' ? 'Others' : p.wholesaleType;
+      if (type && !list.some(wt => wt.toLowerCase() === type.toLowerCase())) {
+        list.push(type);
       }
     });
     return list;
@@ -501,7 +502,8 @@ export default function CollectionsPage() {
       if (selectedWholesaleTypes.length > 0) {
         const hasMatch = selectedWholesaleTypes.some(wt => {
           const wtLower = wt.toLowerCase();
-          return product.wholesaleType && product.wholesaleType.toLowerCase().includes(wtLower);
+          const pType = (product.wholesaleType || '').toLowerCase();
+          return pType.includes(wtLower) || (wtLower === 'others' && pType === 'abaya');
         });
         if (!hasMatch) return false;
       }
@@ -589,8 +591,8 @@ export default function CollectionsPage() {
       priceRange
     });
     const wholesaleItems = result.filter(p => (p.category || '').toLowerCase().includes('wholesale'));
-    const wholesaleAbayaItems = wholesaleItems.filter(p => (p.wholesaleType || '').toLowerCase() === 'abaya');
-    console.log(`Wholesale Products in view: ${wholesaleItems.length} (Wholesale Abayas: ${wholesaleAbayaItems.length})`);
+    const wholesaleOthersItems = wholesaleItems.filter(p => ['abaya', 'others'].includes((p.wholesaleType || '').toLowerCase()));
+    console.log(`Wholesale Products in view: ${wholesaleItems.length} (Wholesale Others: ${wholesaleOthersItems.length})`);
     console.groupEnd();
 
     return result;
