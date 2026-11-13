@@ -243,9 +243,11 @@ export default function SocialProofToast() {
 
           {/* Price & Time info */}
           <div className="flex items-center gap-2 mt-1">
-            <span className="text-xs font-extrabold text-[#7A0648]">
-              {formatPrice ? formatPrice(product) : `AED ${product.price || ''}`}
-            </span>
+            {!(product.category || '').toLowerCase().includes('wholesale') && (
+              <span className="text-xs font-extrabold text-[#7A0648]">
+                {formatPrice ? formatPrice(product) : `AED ${product.price || ''}`}
+              </span>
+            )}
             <span className="text-[10px] text-stone-400 font-medium">• {time}</span>
           </div>
 

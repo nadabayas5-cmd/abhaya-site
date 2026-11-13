@@ -84,14 +84,14 @@ function QuickViewModalContent({ product, onClose }) {
                 alt={product.name}
                 className="w-full h-full object-cover transition-all duration-300"
               />
-              {(product.badge || (product.originalPrice && product.originalPrice > product.price)) && (
+              {(product.badge || (!isWholesale && product.originalPrice && product.originalPrice > product.price)) && (
                 <div className="absolute top-3 left-3 z-10 pointer-events-none flex flex-col items-start gap-1">
                   {product.badge && (
                     <span className="badge-custom text-[9px] px-2 py-0.5 uppercase tracking-wider font-bold shadow-xs">
                       {product.badge}
                     </span>
                   )}
-                  {product.originalPrice && product.originalPrice > product.price && (
+                  {!isWholesale && product.originalPrice && product.originalPrice > product.price && (
                     <span className="badge-sale text-[9px] px-2 py-0.5 uppercase tracking-wider font-bold shadow-xs">
                       Sale
                     </span>
@@ -149,20 +149,23 @@ function QuickViewModalContent({ product, onClose }) {
                   {product.name}
                 </h2>
 
-                <div className="flex items-baseline gap-2.5 pt-0.5">
-                  <span className="text-lg sm:text-xl font-bold text-[#7A0648] tabular-nums tracking-tight">
-                    {formatPrice(product)}
-                  </span>
-                  {currency === 'AED' && product.originalPrice && (
-                    <span className="text-xs sm:text-sm text-stone-400 line-through tabular-nums font-medium">
-                      {formatPrice(product.originalPrice)}
+                {/* Price display (hidden for wholesale) */}
+                {!isWholesale && (
+                  <div className="flex items-baseline gap-2.5 pt-0.5">
+                    <span className="text-lg sm:text-xl font-bold text-[#7A0648] tabular-nums tracking-tight">
+                      {formatPrice(product)}
                     </span>
-                  )}
-                </div>
+                    {currency === 'AED' && product.originalPrice && (
+                      <span className="text-xs sm:text-sm text-stone-400 line-through tabular-nums font-medium">
+                        {formatPrice(product.originalPrice)}
+                      </span>
+                    )}
+                  </div>
+                )}
               </div>
 
               {/* Wholesale MOQ Card */}
-              {product.category === 'WHOLESALE' && (
+              {isWholesale && (
                 <div className="p-3 bg-amber-50 rounded border border-amber-200 text-xs text-amber-900 space-y-1">
                   <div className="flex justify-between font-bold">
                     <span>Wholesale Bulk Lot</span>
@@ -294,7 +297,7 @@ function QuickViewModalContent({ product, onClose }) {
                   className="w-full py-3.5 bg-[#7A0648] hover:bg-[#68043D] text-white text-xs uppercase tracking-[0.14em] font-bold transition-colors flex items-center justify-center gap-2 border border-[#7A0648] shadow-md cursor-pointer"
                 >
                   <ShoppingBag className="w-4 h-4 text-white" strokeWidth={1.5} />
-                  <span>Add to Bag • {formatPrice(getProductPrice(product) * quantity)}</span>
+                  <span>Add to Bag{!isWholesale && ` • ${formatPrice(getProductPrice(product) * quantity)}`}</span>
                 </button>
               </div>
 

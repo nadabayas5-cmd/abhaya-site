@@ -1078,34 +1078,36 @@ export default function CollectionsPage() {
               )}
             </div>
 
-            {/* Price Accordion */}
-            <div className="p-6">
-              <button
-                onClick={() => toggleAccordion('price')}
-                className="w-full flex items-center justify-between text-xs font-bold uppercase tracking-wider text-stone-800 cursor-pointer"
-              >
-                <span>Price {priceRange < maxPriceLimit && `(≤ ${formatPrice(priceRange)})`}</span>
-                <ChevronDown className={`w-4 h-4 transition-transform duration-200 ${openAccordions.price ? 'rotate-180' : ''}`} strokeWidth={1.5} />
-              </button>
+            {/* Price Accordion (Only shown for non-Wholesale) */}
+            {!selectedCategories.some(c => c.toLowerCase() === 'wholesale') && (
+              <div className="p-6">
+                <button
+                  onClick={() => toggleAccordion('price')}
+                  className="w-full flex items-center justify-between text-xs font-bold uppercase tracking-wider text-stone-800 cursor-pointer"
+                >
+                  <span>Price {priceRange < maxPriceLimit && `(≤ ${formatPrice(priceRange)})`}</span>
+                  <ChevronDown className={`w-4 h-4 transition-transform duration-200 ${openAccordions.price ? 'rotate-180' : ''}`} strokeWidth={1.5} />
+                </button>
 
-              {openAccordions.price && (
-                <div className="pt-4 space-y-3">
-                  <div className="flex items-center justify-between text-xs text-stone-600">
-                    <span>{formatPrice(minPriceLimit)}</span>
-                    <span className="font-bold text-[#7A0648]">{formatPrice(priceRange)}</span>
+                {openAccordions.price && (
+                  <div className="pt-4 space-y-3">
+                    <div className="flex items-center justify-between text-xs text-stone-600">
+                      <span>{formatPrice(minPriceLimit)}</span>
+                      <span className="font-bold text-[#7A0648]">{formatPrice(priceRange)}</span>
+                    </div>
+                    <input
+                      type="range"
+                      min={minPriceLimit}
+                      max={maxPriceLimit}
+                      step="5"
+                      value={priceRange}
+                      onChange={(e) => setPriceRange(Number(e.target.value))}
+                      className="w-full accent-[#7A0648] cursor-pointer"
+                    />
                   </div>
-                  <input
-                    type="range"
-                    min={minPriceLimit}
-                    max={maxPriceLimit}
-                    step="5"
-                    value={priceRange}
-                    onChange={(e) => setPriceRange(Number(e.target.value))}
-                    className="w-full accent-[#7A0648] cursor-pointer"
-                  />
-                </div>
-              )}
-            </div>
+                )}
+              </div>
+            )}
 
           </div>
 

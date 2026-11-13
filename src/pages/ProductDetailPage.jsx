@@ -622,14 +622,14 @@ export default function ProductDetailPage() {
             />
 
             {/* Badges Overlay */}
-            {(product.badge || (currency === 'AED' && product.originalPrice && product.originalPrice > product.price)) && (
+            {(product.badge || (!isWholesaleProduct && currency === 'AED' && product.originalPrice && product.originalPrice > product.price)) && (
               <div className="absolute top-3 left-3 z-10 pointer-events-none flex flex-col items-start gap-1.5">
                 {product.badge && (
                   <span className="badge-custom text-[10px] tracking-widest uppercase shadow-xs">
                     {product.badge}
                   </span>
                 )}
-                {currency === 'AED' && product.originalPrice && product.originalPrice > product.price && (
+                {!isWholesaleProduct && currency === 'AED' && product.originalPrice && product.originalPrice > product.price && (
                   <span className="badge-sale text-[10px] tracking-widest uppercase shadow-xs">
                     Sale
                   </span>
@@ -776,19 +776,21 @@ export default function ProductDetailPage() {
               </p>
             )}
 
-            {/* Price Row */}
-            <div className="flex items-baseline gap-3 pt-1">
-              <span className="text-xl sm:text-2xl text-[#7A0648] font-bold tabular-nums tracking-tight">
-                {formatPrice(product)}
-              </span>
-              {currency === 'AED' && product.originalPrice && product.originalPrice > product.price && (
-                <span className="text-sm sm:text-base text-stone-400 line-through tabular-nums">
-                  {formatPrice(product.originalPrice)}
+            {/* Price Row (Hidden for Wholesale) */}
+            {!isWholesaleProduct && (
+              <div className="flex items-baseline gap-3 pt-1">
+                <span className="text-xl sm:text-2xl text-[#7A0648] font-bold tabular-nums tracking-tight">
+                  {formatPrice(product)}
                 </span>
-              )}
-            </div>
+                {currency === 'AED' && product.originalPrice && product.originalPrice > product.price && (
+                  <span className="text-sm sm:text-base text-stone-400 line-through tabular-nums">
+                    {formatPrice(product.originalPrice)}
+                  </span>
+                )}
+              </div>
+            )}
 
-            {freeShippingThreshold > 0 && (
+            {!isWholesaleProduct && freeShippingThreshold > 0 && (
               <div className="flex items-start gap-2 pt-2.5 text-xs text-stone-600 font-medium leading-relaxed">
                 <Truck className="w-4 h-4 text-[#7A0648] shrink-0 mt-0.5" strokeWidth={1.75} />
                 <span>
@@ -1281,7 +1283,9 @@ export default function ProductDetailPage() {
             />
             <div className="truncate">
               <p className="text-xs font-bold uppercase text-white truncate">{product.name}</p>
-              <p className="text-xs font-bold text-[#FFF0A0] tabular-nums">{formatPrice(product)}</p>
+              {!isWholesaleProduct && (
+                <p className="text-xs font-bold text-[#FFF0A0] tabular-nums">{formatPrice(product)}</p>
+              )}
             </div>
           </div>
           <button

@@ -57,6 +57,7 @@ export default function ProductCard({ product }) {
   } = useShop();
 
   const [isHovered, setIsHovered] = useState(false);
+  const isWholesale = (product?.category || '').toLowerCase().includes('wholesale');
 
   // Image handling
   const gallery = product.gallery && product.gallery.length > 0 ? product.gallery : [product.image];
@@ -103,14 +104,14 @@ export default function ProductCard({ product }) {
         )}
 
         {/* Badges (Top Left) */}
-        {(product.badge || (product.originalPrice && product.originalPrice > product.price)) && (
+        {(product.badge || (!isWholesale && product.originalPrice && product.originalPrice > product.price)) && (
           <div className="absolute top-2.5 left-2.5 z-10 pointer-events-none flex flex-col items-start gap-1">
             {product.badge && (
               <span className="bg-[#7A0648] text-white text-[8.5px] sm:text-[9.5px] tracking-[0.12em] uppercase font-bold px-2 py-0.5 shadow-sm">
                 {product.badge}
               </span>
             )}
-            {product.originalPrice && product.originalPrice > product.price && (
+            {!isWholesale && product.originalPrice && product.originalPrice > product.price && (
               <span className="bg-[#E32C2B] text-white text-[8.5px] sm:text-[9.5px] tracking-[0.14em] uppercase font-bold px-2 py-0.5 shadow-sm">
                 Sale
               </span>
@@ -129,17 +130,19 @@ export default function ProductCard({ product }) {
           isHovered={isHovered}
         />
 
-        {/* Price display */}
-        <div className="flex items-center justify-center gap-1.5 text-[12px] sm:text-[13px]">
-          {currency === 'AED' && product.originalPrice && product.originalPrice > product.price && (
-            <span className="text-stone-400 line-through tabular-nums text-[11px]">
-              {formatPrice(product.originalPrice)}
+        {/* Price display (hidden for wholesale) */}
+        {!isWholesale && (
+          <div className="flex items-center justify-center gap-1.5 text-[12px] sm:text-[13px]">
+            {currency === 'AED' && product.originalPrice && product.originalPrice > product.price && (
+              <span className="text-stone-400 line-through tabular-nums text-[11px]">
+                {formatPrice(product.originalPrice)}
+              </span>
+            )}
+            <span className="font-bold tabular-nums tracking-tight text-[#7A0648]">
+              {formatPrice(product)}
             </span>
-          )}
-          <span className="font-bold tabular-nums tracking-tight text-[#7A0648]">
-            {formatPrice(product)}
-          </span>
-        </div>
+          </div>
+        )}
 
         {/* Star Rating Badge */}
         <div className="flex items-center justify-center pt-0.5">
