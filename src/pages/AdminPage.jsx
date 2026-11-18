@@ -634,6 +634,8 @@ export default function AdminPage() {
                             <img
                               src={p.image}
                               alt={p.name}
+                              loading="lazy"
+                              decoding="async"
                               className="w-12 h-16 rounded-lg object-cover border border-secondary/20 shrink-0 bg-surface-container shadow-xs"
                             />
                             <div>
@@ -792,7 +794,13 @@ export default function AdminPage() {
                   className="bg-white rounded-2xl overflow-hidden border border-secondary/20 shadow-subtle hover:shadow-luxury transition-all flex flex-col"
                 >
                   <div className="aspect-[3/4] relative bg-surface-container overflow-hidden">
-                    <img src={p.image} alt={p.name} className="w-full h-full object-cover" />
+                    <img
+                      src={p.image}
+                      alt={p.name}
+                      loading="lazy"
+                      decoding="async"
+                      className="w-full h-full object-cover"
+                    />
                     
                     {p.badge && (
                       <div className="absolute top-3 left-3 px-2.5 py-1 rounded-full bg-royal-violet/90 backdrop-blur-md text-white text-[10px] font-semibold">

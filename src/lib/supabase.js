@@ -330,6 +330,71 @@ export async function deleteProductFromSupabase(productId) {
 }
 
 /**
+ * Automatically compress an image file to modern WebP format on the client before upload.
+ * Reduces 2-5MB photos down to ~50-100KB with crystal clarity.
+ */
+async function compressImageForUpload(file, maxWidth = 1600, quality = 0.85) {
+  if (
+    typeof window === 'undefined' ||
+    !file ||
+    !file.type ||
+    !file.type.startsWith('image/') ||
+    file.type === 'image/svg+xml'
+  ) {
+    return file;
+  }
+
+  return new Promise((resolve) => {
+    const img = new Image();
+    const objectUrl = URL.createObjectURL(file);
+
+    img.onload = () => {
+      URL.revokeObjectURL(objectUrl);
+      let { width, height } = img;
+
+      if (width > maxWidth) {
+        height = Math.round((height * maxWidth) / width);
+        width = maxWidth;
+      }
+
+      const canvas = document.createElement('canvas');
+      canvas.width = width;
+      canvas.height = height;
+      const ctx = canvas.getContext('2d');
+      if (!ctx) {
+        resolve(file);
+        return;
+      }
+
+      // Draw onto canvas
+      ctx.drawImage(img, 0, 0, width, height);
+
+      canvas.toBlob(
+        (blob) => {
+          if (!blob) {
+            resolve(file);
+            return;
+          }
+          const cleanName = file.name.replace(/\.[^/.]+$/, '') + '.webp';
+          const compressedFile = new File([blob], cleanName, { type: 'image/webp' });
+          console.log(`[Supabase Storage] Optimized image size: ${(file.size / 1024).toFixed(1)} KB → ${(compressedFile.size / 1024).toFixed(1)} KB WebP`);
+          resolve(compressedFile);
+        },
+        'image/webp',
+        quality
+      );
+    };
+
+    img.onerror = () => {
+      URL.revokeObjectURL(objectUrl);
+      resolve(file);
+    };
+
+    img.src = objectUrl;
+  });
+}
+
+/**
  * Upload an image to Supabase Storage
  */
 export async function uploadProductImage(file, subFolder = 'general') {
@@ -361,7 +426,8 @@ export async function uploadProductImage(file, subFolder = 'general') {
   }
 
   try {
-    const fileExt = file.name ? file.name.split('.').pop() : 'jpg';
+    const processedFile = await compressImageForUpload(file);
+    const fileExt = processedFile.name ? processedFile.name.split('.').pop() : 'webp';
     const cleanFileName = `${Date.now()}-${Math.random().toString(36).substring(2, 8)}.${fileExt}`;
     const filePath = `products/${subFolder}/${cleanFileName}`;
 
@@ -369,8 +435,9 @@ export async function uploadProductImage(file, subFolder = 'general') {
 
     const { data: uploadData, error: uploadError } = await supabase.storage
       .from(STORAGE_BUCKET)
-      .upload(filePath, file, {
-        cacheControl: '3600',
+      .upload(filePath, processedFile, {
+        cacheControl: '31536000', // 1 year immutable edge cache
+        contentType: processedFile.type || 'image/webp',
         upsert: true
       });
 

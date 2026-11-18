@@ -882,7 +882,13 @@ export default function AdminProductEditor({
                     className={`relative aspect-[3/4] rounded-2xl bg-surface-container overflow-hidden border-2 transition-all group shadow-xs ${isMain ? 'border-royal-violet ring-2 ring-royal-violet/30' : 'border-secondary/20 hover:border-royal-violet/50'
                       }`}
                   >
-                    <img src={url} alt={`Product angle ${idx + 1}`} className="w-full h-full object-cover" />
+                    <img
+                      src={url}
+                      alt={`Product angle ${idx + 1}`}
+                      loading="lazy"
+                      decoding="async"
+                      className="w-full h-full object-cover"
+                    />
 
                     {isMain && (
                       <div className="absolute top-2 left-2 px-2.5 py-1 rounded-lg bg-royal-violet text-white text-[10px] font-bold uppercase tracking-wider shadow">

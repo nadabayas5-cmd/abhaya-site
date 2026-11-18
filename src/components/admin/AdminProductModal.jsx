@@ -710,7 +710,13 @@ export default function AdminProductModal({
                 <div className="grid grid-cols-1 sm:grid-cols-12 gap-4 items-center">
                   <div className="sm:col-span-4 aspect-[3/4] rounded-xl bg-surface-container overflow-hidden border border-secondary/20 relative group flex items-center justify-center">
                     {image ? (
-                      <img src={image} alt="Hero preview" className="w-full h-full object-cover" />
+                      <img
+                        src={image}
+                        alt="Hero preview"
+                        loading="lazy"
+                        decoding="async"
+                        className="w-full h-full object-cover"
+                      />
                     ) : (
                       <div className="text-center p-4 text-stone-400">
                         <ImageIcon className="w-8 h-8 mx-auto mb-2 opacity-50" />
@@ -778,7 +784,13 @@ export default function AdminProductModal({
                 <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
                   {gallery.map((url, idx) => (
                     <div key={idx} className="relative aspect-[3/4] rounded-xl bg-surface-container overflow-hidden border border-secondary/20 group">
-                      <img src={url} alt={`Gallery ${idx + 1}`} className="w-full h-full object-cover" />
+                      <img
+                        src={url}
+                        alt={`Gallery ${idx + 1}`}
+                        loading="lazy"
+                        decoding="async"
+                        className="w-full h-full object-cover"
+                      />
                       
                       <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex flex-col justify-between p-2">
                         <span className="text-[10px] text-white bg-black/60 px-1.5 py-0.5 rounded self-start">

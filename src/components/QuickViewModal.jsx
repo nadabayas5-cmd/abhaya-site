@@ -111,7 +111,7 @@ function QuickViewModalContent({ product, onClose }) {
                       activeImageIdx === idx ? 'border-[#7A0648] ring-2 ring-[#7A0648]' : 'border-stone-300 opacity-70 hover:opacity-100'
                     }`}
                   >
-                    <img src={img} alt="" className="w-full h-full object-cover" />
+                    <img src={img} alt="" loading="lazy" decoding="async" className="w-full h-full object-cover" />
                   </button>
                 ))}
               </div>
