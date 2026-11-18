@@ -395,12 +395,27 @@ async function compressImageForUpload(file, maxWidth = 1600, quality = 0.85) {
 }
 
 /**
- * Upload an image to Supabase Storage
+ * Convert a File/Blob to base64 string
  */
-export async function uploadProductImage(file, subFolder = 'general') {
+function fileToBase64(file) {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = () => {
+      const base64String = reader.result.split(',')[1];
+      resolve(base64String);
+    };
+    reader.onerror = reject;
+    reader.readAsDataURL(file);
+  });
+}
+
+/**
+ * Upload an image to Cloudflare R2 (with Supabase Storage fallback)
+ */
+export async function uploadProductImage(file, subFolder = 'product') {
   const timestamp = new Date().toISOString();
-  console.group(`[Supabase Storage] 📤 uploadProductImage @ ${timestamp}`);
-  console.log('[Supabase Storage] File details:', {
+  console.group(`[Media Storage] 📤 uploadProductImage @ ${timestamp}`);
+  console.log('[Media Storage] File details:', {
     name: file?.name,
     type: file?.type,
     sizeBytes: file?.size,
@@ -411,26 +426,56 @@ export async function uploadProductImage(file, subFolder = 'general') {
   });
 
   if (!file) {
-    console.error('[Supabase Storage ERROR] No file provided.');
+    console.error('[Media Storage ERROR] No file provided.');
     console.groupEnd();
     return { url: null, error: 'No file provided' };
-  }
-
-  if (!isSupabaseConfigured || !supabase) {
-    console.error('[Supabase Storage ERROR] Supabase is not configured.');
-    console.groupEnd();
-    return {
-      url: null,
-      error: 'Supabase storage is not configured. Please verify your Supabase environment variables.'
-    };
   }
 
   try {
     const processedFile = await compressImageForUpload(file);
     const fileExt = processedFile.name ? processedFile.name.split('.').pop() : 'webp';
     const cleanFileName = `${Date.now()}-${Math.random().toString(36).substring(2, 8)}.${fileExt}`;
-    const filePath = `products/${subFolder}/${cleanFileName}`;
 
+    // 1. Priority: Upload directly to Cloudflare R2 (Zero Egress Fees)
+    try {
+      console.log(`[Cloudflare R2] Uploading to R2 bucket 'abaya' via /api/upload...`);
+      const base64Data = await fileToBase64(processedFile);
+      const r2Res = await fetch('/api/upload', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          filename: cleanFileName,
+          subFolder,
+          contentType: processedFile.type || 'image/webp',
+          data: base64Data
+        })
+      });
+
+      if (r2Res.ok) {
+        const { url: r2Url } = await r2Res.json();
+        if (r2Url) {
+          console.log('[Cloudflare R2 SUCCESS] Uploaded to Cloudflare R2:', r2Url);
+          console.groupEnd();
+          return { url: r2Url, error: null };
+        }
+      } else {
+        console.warn(`[Cloudflare R2 WARN] /api/upload returned ${r2Res.status}. Falling back to Supabase Storage.`);
+      }
+    } catch (r2Err) {
+      console.warn('[Cloudflare R2 WARN] /api/upload encountered error, falling back to Supabase:', r2Err);
+    }
+
+    // 2. Fallback: Upload to Supabase Storage
+    if (!isSupabaseConfigured || !supabase) {
+      console.error('[Supabase Storage ERROR] Supabase is not configured.');
+      console.groupEnd();
+      return {
+        url: null,
+        error: 'Storage is not configured. Please verify your environment variables.'
+      };
+    }
+
+    const filePath = `products/${subFolder}/${cleanFileName}`;
     console.log(`[Supabase Storage] Uploading to bucket '${STORAGE_BUCKET}' at path '${filePath}'...`);
 
     const { data: uploadData, error: uploadError } = await supabase.storage
@@ -466,9 +511,9 @@ export async function uploadProductImage(file, subFolder = 'general') {
     console.groupEnd();
     return { url: null, error: 'Could not generate public URL for uploaded file.' };
   } catch (err) {
-    console.error('[Supabase Storage CATCH] Exception during storage upload:', err);
+    console.error('[Media Storage CATCH] Exception during storage upload:', err);
     console.groupEnd();
-    return { url: null, error: err.message || 'Error uploading image to Supabase' };
+    return { url: null, error: err.message || 'Error uploading image' };
   }
 }
 
